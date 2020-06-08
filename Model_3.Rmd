@@ -1,0 +1,6 @@
+---
+title: "About Model 3"
+description: |
+  Some additional details about the blog
+---
+

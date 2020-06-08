@@ -1,0 +1,6 @@
+---
+title: "About Model 1"
+description: |
+  Some additional details about the blog
+---
+
