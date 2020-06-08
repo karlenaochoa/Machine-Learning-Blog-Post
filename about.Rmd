@@ -7,3 +7,48 @@ description: |
 ```{r setup, include=FALSE}
 knitr::opts_chunk$set(echo = FALSE)
 ```
+
+
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(message = FALSE,
+                      warning = FALSE,
+                      cache = TRUE)
+
+library(tidyverse)
+library(tidymodels)
+library(baguette)
+library(future)
+
+library(vip)
+library(rpart.plot)
+library(tictoc)
+
+theme_set(theme_minimal())
+```
+
+```{r}
+train <- read_csv(
+    here::here("data", "edld-654-spring-2020", "train.csv")) %>% 
+    sample_frac(.01) %>% 
+    select(-classification)
+
+
+sheets <- readxl::excel_sheets(here::here("data", "fallmembershipreport_20192020.xlsx"))
+
+ode_schools <- readxl::read_xlsx(here::here("data", "fallmembershipreport_20192020.xlsx"), sheet = sheets[4])
+
+ethnicities <- ode_schools %>%
+  select(attnd_schl_inst_id = `Attending School ID`,
+  attnd_dist_inst_id = `Attending District Institution ID`,
+  sch_name = `School Name`,
+  contains("%")) %>%
+  janitor::clean_names()
+
+names(ethnicities) <- gsub("x2019_20_percent", "p", names(ethnicities))
+
+train_df <- left_join(train, ethnicities)
+
+skim <- as.data.frame(skimr::skim(train_df)) 
+
+
+```
