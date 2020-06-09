@@ -1,5 +1,5 @@
 name: "website2"
-title: "My Blog"
+title: "Machine Learning Blog"
 description: |
   My Blog
 output_dir: "docs"

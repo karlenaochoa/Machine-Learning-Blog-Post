@@ -1,21 +1,15 @@
 ---
-title: "About this blog"
+title: "Overview of Dataset"
 description: |
-  Some additional details about the blog
+  Additional information regarding the data set can be found on Kaggle or in the data folder in our GitHub Repo.
 ---
 
-Our final machine learning project was to use all the skills we’ve learned this term to  make the best predictive model of students' test scores for children in grades 3-8. We specifically used data from Oregon schools and included longitude and latitude to be able to assess for rural and urban schools. We added data from the National Center for Educational Statistics about the number of students who receive free or reduced lunch for every school in Oregon. We then calculated for the number of students and proportion of students receiving free or reduced lunch across each grade.
 
-Our data set contains 47 variables. We have 11 continuous variables, and 36 categorical. We included a total of 47 variables in our model. Missing data was treated with mean imputation. 
+Our final machine learning project was to use all the skills we have learned this term to make the best predictive model of students' test scores (math and reading) for children in grades 3-8. We specifically used data from Oregon schools and included longitude and latitude to be able to control for geographic location (rural vs urban schools). We added data from the National Center for Educational Statistics about the number of students who receive free or reduced lunch for every school in Oregon. We then calculated for the number of students and proportion of students receiving free or reduced lunch across each grade per school district.
 
+Our data set contains 47 variables: 11 continuous variables and 36 categorical variables. Means and standard deviation for continuous variables are displayed below. A list and description of all variables can be found on [Kaggle](https://www.kaggle.com/c/edld-654-spring-2020/data) or in the data folder in our [GitHub](https://github.com/karlenaochoa/Machine-Learning-Blog-Post) Repo. Some of the categorical variables include gender, ethnicity, grade in school, whether a child participated in a Talented and gifted (TAG) program or Special Ed program. 
 
-In order to see if our models could produce adequate out-of-sample predictive accuracy, we split our raw data into a training set (75%) and a test set (25%). 
-
-To test the accuracy of our model, we used Root Mean Square Error (RMSE) 
-
-
-
-
+Although initially we had hoped to use mean imputation for missing data it caused our models not to run so we ended up using median imputation to provided estimates for missing data. To see if our models could produce adequate out-of-sample predictive accuracy, we split our raw data into a training set (75%) and a test set (25%). All feature engineering for data and models was conducted on the training set, and the test set remained untouched until the model was finalized for the training data set. To test the accuracy of our model, we used Root Mean Square Error (RMSE) to examine performance. 
 
 
 ```{r setup, include=FALSE}
@@ -73,13 +67,14 @@ skim_non_num <- skim %>%
 
 ```
 
+Table 1.
 ```{r include = TRUE}
 
 gt(skim_num)
   
 ```  
 
-```{r include = TRUE}
+```{r include = FALSE}
 
 gt(skim_non_num)
 ```
