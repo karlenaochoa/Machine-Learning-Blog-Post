@@ -4,6 +4,83 @@ description: |
   Some additional details about the blog
 ---
 
+Our final machine learning project was to use all the skills we’ve learned this term to  make the best predictive model of students' test scores for children in grades 3-8. We specifically used data from Oregon schools and included longitude and latitude to be able to assess for rural and urban schools. We added data from the National Center for Educational Statistics about the number of students who receive free or reduced lunch for every school in Oregon. We then calculated for the number of students and proportion of students receiving free or reduced lunch across each grade.
+
+Our data set contains 47 variables. We have 11 continuous variables, and 36 categorical. We included a total of 47 variables in our model. Missing data was treated with mean imputation. 
+
+
+In order to see if our models could produce adequate out-of-sample predictive accuracy, we split our raw data into a training set (75%) and a test set (25%). 
+
+To test the accuracy of our model, we used Root Mean Square Error (RMSE) 
+
+
+
+
+
+
 ```{r setup, include=FALSE}
-knitr::opts_chunk$set(echo = FALSE)
+knitr::opts_chunk$set(message = FALSE,
+                      warning = FALSE,
+                      cache = TRUE, 
+                      echo = FALSE)
+
+library(tidyverse)
+library(tidymodels)
+library(baguette)
+library(future)
+library(distill)
+library(vip)
+library(rpart.plot)
+library(tictoc)
+library(gt)
+
+theme_set(theme_minimal())
 ```
+
+```{r, include=FALSE}
+train <- read_csv(
+    here::here("data", "edld-654-spring-2020", "train.csv")) %>% 
+    sample_frac(.01) %>% 
+    select(-classification)
+
+
+sheets <- readxl::excel_sheets(here::here("data", "fallmembershipreport_20192020.xlsx"))
+
+ode_schools <- readxl::read_xlsx(here::here("data", "fallmembershipreport_20192020.xlsx"), sheet = sheets[4])
+
+ethnicities <- ode_schools %>%
+  select(attnd_schl_inst_id = `Attending School ID`,
+  attnd_dist_inst_id = `Attending District Institution ID`,
+  sch_name = `School Name`,
+  contains("%")) %>%
+  janitor::clean_names()
+
+names(ethnicities) <- gsub("x2019_20_percent", "p", names(ethnicities))
+
+train_df <- left_join(train, ethnicities)
+
+skim <- as.data.frame(skimr::skim(train_df)) 
+
+skim_num <- skim %>% 
+   filter(skim_type == "numeric")%>%
+   select(skim_variable, numeric.mean, numeric.sd, n_missing)%>%
+   slice(4, 7, 9:17)%>%
+   mutate_if(is.numeric, round, 3)
+
+skim_non_num <- skim %>% 
+   slice(1:33, 35:36, 38)%>%
+  select(skim_variable)
+
+```
+
+```{r include = TRUE}
+
+gt(skim_num)
+  
+```  
+
+```{r include = TRUE}
+
+gt(skim_non_num)
+```
+
