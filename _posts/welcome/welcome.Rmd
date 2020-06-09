@@ -1,14 +1,13 @@
 ---
-title: "Welcome to My Blog"
+title: "Welcome to our Machine Learning Blog!"
 description: |
-  Welcome to our new blog, My Blog. We hope you enjoy 
-  reading what we have to say!
+   To learn about what we did and a description of the data see the About Page, to view individual models view the different pages in the navigation bar. 
 author:
-  - name: Nora Jones 
+  - name: Kathryn Denning, Tamara Niella, Karlena Ochoa
     url: https://example.com/norajones
-    affiliation: Spacely Sprockets
+    affiliation: University of Oregon 
     affiliation_url: https://example.com/spacelysprokets
-date: 03-04-2019
+date: 06-08-2020
 output:
   distill::distill_article:
     self_contained: false

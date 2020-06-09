@@ -1,18 +1,18 @@
 [
   {
     "path": "posts/welcome/",
-    "title": "Welcome to My Blog",
-    "description": "Welcome to our new blog, My Blog. We hope you enjoy \nreading what we have to say!",
+    "title": "Welcome to our Machine Learning Blog!",
+    "description": "To learn about what we did and a description of the data see the About Page, to view individual models view the different pages in the navigation bar.",
     "author": [
       {
-        "name": "Nora Jones",
+        "name": "Kathryn Denning, Tamara Niella, Karlena Ochoa",
         "url": "https://example.com/norajones"
       }
     ],
-    "date": "2019-03-04",
+    "date": "2020-06-08",
     "categories": [],
     "preview": {},
-    "last_modified": "2020-06-08T11:49:40-07:00",
-    "input_file": {}
+    "last_modified": "2020-06-08T12:26:54-07:00",
+    "input_file": "welcome.utf8.md"
   }
 ]
