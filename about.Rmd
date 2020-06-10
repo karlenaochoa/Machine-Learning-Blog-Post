@@ -67,7 +67,11 @@ skim_non_num <- skim %>%
 
 ```
 
+
 Table 1.
+
+
+
 ```{r include = TRUE}
 
 gt(skim_num)
