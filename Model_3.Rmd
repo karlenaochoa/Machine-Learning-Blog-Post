@@ -328,7 +328,7 @@ ggplot(to_plot_rand, aes(tuning_val, mean)) +
   theme_minimal()
 ```
 
-```{r randomness plot, echo = FALSE, eval = TRUE, out.width = '100%'}
+```{r randomness plot png, echo = FALSE, eval = TRUE, out.width = '100%'}
 knitr::include_graphics("randomness plot 2.png")
 ```
 
