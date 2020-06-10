@@ -4,3 +4,83 @@ description: |
   Some additional details about the blog
 ---
 
+```{r setup, include=FALSE}
+knitr::opts_chunk$set(echo = TRUE, warning = FALSE)
+
+library(tidymodels)
+library(skimr)
+library(doParallel)
+library(tictoc)
+library(vip)
+library(xgboost)
+library(rio)
+library(Cairo)
+
+full_train <- read.csv(here("data","train.csv")) %>%
+                 select(-classification) %>% 
+                 sample_frac(.10)
+
+```
+```{r importing data}
+set.seed(2000)
+full_train <- read_csv(here::here("data", "train.csv"))  %>% 
+    select(-classification)  %>% 
+    sample_frac(.05)
+
+frl <- import("https://nces.ed.gov/ccd/Data/zip/ccd_sch_033_1718_l_1a_083118.zip",
+              setclass = "tbl_df")  %>% 
+  janitor::clean_names()  %>% 
+  filter(st == "OR")  %>%
+  select(ncessch, lunch_program, student_count)  %>% 
+  mutate(student_count = replace_na(student_count, 0))  %>% 
+  pivot_wider(names_from = lunch_program,
+              values_from = student_count)  %>% 
+  janitor::clean_names()  %>% 
+  mutate(ncessch = as.double(ncessch))
+
+stu_counts <- import("https://github.com/datalorax/ach-gap-variability/raw/master/data/achievement-gaps-geocoded.csv",
+                     setclass = "tbl_df")  %>% 
+  filter(state == "OR" & year == 1718)  %>% 
+  count(ncessch, wt = n)  %>% 
+  mutate(ncessch = as.double(ncessch))
+
+frl <- left_join(frl, stu_counts)
+
+frl <- frl  %>% 
+    mutate(prop_free = (free_lunch_qualified/n),
+           prop_reduce = reduced_price_lunch_qualified/n)
+
+data <- left_join(full_train, frl, join_by = ncessch)
+```
+
+# What is boosted trees and why are using it?
+
+For our third model, we decided to conduct a boosted trees regression model. This builds upon basic decision trees, which recursively split data into binary and homogenous subgroups until reaching an optimum point in which the nodes cannot be split further. Each subgroup is split into what the algorithm thinks is the “best,” based on running all other possible splits on all variables. 
+
+To improve upon decision trees, ensemble methods have been created to aggregate across multiple decision trees in order to develop better models and predictions. Another ensemble method includes bagging, which aggregates across multiple decision tree models using bootstrapping. Boosted trees (the ensemble method we are using) work by fitting multiple decision trees sequentially to the residuals of the previous model until reaching a stopping rule that ends the sequential model fitting. Although boosted trees mostly consist of “stumps,” or short trees with little data in each individual model, their ensemble output typically achieves high “out-of-the-box” performance, making it an appealing choice for our final fit.
+
+An important aspect of boosted trees is gradient descent, which is an optimization algorithm that compares predictions against a cost function to determine how steep the sequential models descend to reach the designated stopping point. For us, this stopping point will be the minimum value. The steepness of the descent is determined by the learning rate, or the size of steps we take at each model iteration.
+
+# Important hyperparameters to tune:
+
+* **Learning rate** : the size of step we take at each model iteration as we descend to the best minimum value during gradient descent. 
+  + Typically ranges from .001 to .3, but can range from 0 to 1. 
+  + Smaller values help avoid overfitting and have a greater chance of achieving “optimal” accuracy, but are more computationally intensive.
+* **Tree depth** : how many splits we conduct, this is typically low in boosted trees, which helps reduce possible overfitting.
+* **Number of trees** : the number of trees we fit. Too few and we underfit, too many and we overfit.
+* **Minimum n for a terminal node** : the number of splits before reaching an end node of the tree.
+
+# Overview of the steps in our boosted tree:
+
+1. Tuned the learning rate between the optimum values of .001 to .3.
+2. Tuned again using a lower learning rate range, since our optimum value from the first model was relatively small.
+3. Selected the best learning rate, then tuned tree depth and minimum n at that rate.
+4. Selected optimum tree depth and minimum n, then tuned loss reduction.
+5. Tuned model for randomness using mtry and sample size. 
+  + As loss reduction had no impact on the model, we did not select the best output from that model.
+6. Selected the best model based on randomness and developed predictions for our test dataset.
+
+# Lets look at the code!
+
+
+
