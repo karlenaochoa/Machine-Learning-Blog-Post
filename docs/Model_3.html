@@ -1409,7 +1409,7 @@ collect_metrics(tune_tree_lr)
 show_best(tune_tree_lr, &quot;rmse&quot;)</code></pre>
 </div>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="loss%20reduction%20output.png" width="100%" /></p>
+<p><img src="lr1_whiteback.png" width="100%" /></p>
 </div>
 <p>We decided to plot this output to see if we need to tune learning rate again. After looking at the plot, we decided to try an even smaller learning rate, as our best value was at the bottom of the range we used.</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -1437,7 +1437,7 @@ ggplot(to_plot, aes(learn_rate, mean)) +
        y = &quot;Mean&quot;)</code></pre>
 </div>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="learn%20rate%20plot-1.png" width="100%" /></p>
+<p><img src="lr1%20plot%20white%20back.png" width="100%" /></p>
 </div>
 <h3 id="tuning-again-using-a-lower-learning-rate-range">Tuning again using a lower learning rate range</h3>
 <p>The code below is very similar to the last model, with the only difference being that we lowered our range in expand.grid for learning rate to vary between 0.0001 to 0.1.</p>
@@ -1466,7 +1466,7 @@ collect_metrics(tune_tree_lr2)
 show_best(tune_tree_lr2, &quot;rmse&quot;)</code></pre>
 </div>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="second%20learn%20rate%20output.png" width="100%" /></p>
+<p><img src="lr2%20white%20back.png" width="100%" /></p>
 </div>
 <h3 id="tuning-tree-depth-and-minimum-n">Tuning tree depth and minimum n</h3>
 <p>In the code below, you can see that told our model to use the learning rate that lead to the best RSME in our first model using this code:</p>
@@ -1488,16 +1488,19 @@ tic()
 tune_tree_depth &lt;- tune_grid(wf_tune_depth, cv, grid = grd, control = tune::control_resamples(verbose = TRUE, save_pred = TRUE))
 toc()</code></pre>
 </div>
-<p>In the following results, you can see the best RSME was X at a tree depth of X and minimum n of X.</p>
+<p>In the following results, you can see the best RSME was 87.7 at a tree depth of 2 and minimum n of 14.</p>
+<p><em>Note: We had to re-run these results because we forgot to take a screenshot of our previous tree depth model results after the first 8 hour run. In those results, the best model had an n of 38 and a depth of 1 and an RSME somewhere in 88. We based the following randomness model on that tree depth of 1. We re-ran these results overnight and did not see the difference until the entire analysis was completed. If we had, we would have continued with this model informing our randomness model and (as you will see later) as our overall best model.</em></p>
 <div class="layout-chunk" data-layout="l-body">
 <pre class="r"><code>
 collect_metrics(tune_tree_depth)
 
 show_best(tune_tree_depth, &quot;rmse&quot;)</code></pre>
 </div>
-<p>DID NOT TAKE SCREENSHOT OF THIS OUTPUT :(</p>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="tree%20depth%20white%20back.png" width="100%" /></p>
+</div>
 <h3 id="tuning-loss-reduction">Tuning loss reduction</h3>
-<p>We then decided to tune loss reduction by again setting that parameter to tune within the the set_args() function of the model and defined the range in expand.grid to be from 0 to 100 with intervals of 5. We took the best parameters from the last model and manually set tree_depth to 1.</p>
+<p>We then decided to tune loss reduction by again setting that parameter to tune within the the set_args() function of the model and defined the range in expand.grid to be from 0 to 100 with intervals of 5. We took the best parameters from the last model, but manually set tree_depth to 1 based on a prior model we had run (see note after tree depth model for explanation).</p>
 <div class="layout-chunk" data-layout="l-body">
 <pre class="r"><code>
 tune_loss &lt;- tune_depth %&gt;% 
@@ -1514,7 +1517,7 @@ tic()
 tune_tree_reg &lt;- tune_grid(wf_tune_reg, cv, grid = grd, control = tune::control_resamples(verbose = TRUE, save_pred = TRUE))
 toc()</code></pre>
 </div>
-<p>As can be seen in the output below, tuning loss reduction had no impact on our model. Thus, we decided to ignore this model and do the next model using the best output from when we tuned tree depth and minimum n.</p>
+<p>As can be seen in the output below, tuning loss reduction actually worsened the results. Thus, we decided to ignore this model and do the next model using the best output from when we tuned tree depth and minimum n.</p>
 <div class="layout-chunk" data-layout="l-body">
 <pre class="r"><code>
 collect_metrics(tune_tree_reg)
@@ -1524,7 +1527,7 @@ show_best(tune_tree_reg, &quot;rmse&quot;)
 # no improvement on last model</code></pre>
 </div>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="loss%20reduction%20output.png" width="100%" /></p>
+<p><img src="loss%20reduction%20white%20back.png" width="100%" /></p>
 </div>
 <h3 id="tuning-randomness-using-mtry-and-sample_size">Tuning randomness using mtry and sample_size</h3>
 <p>We selected the best parameters from when we tuned tree depth and minimum n, then tuned randomness by setting mtry and sample_size to tune() and using grid_max_entropy to define this tuning. By using finalize with mtry, mtry will automatically look at all our predictors because we are finalizing it with our recipe and data. We then tell sample_size that we only want it to look at proportion.</p>
@@ -1546,7 +1549,7 @@ tic()
 tune_tree_rand &lt;- tune_grid(wf_tune_rand, cv, grid = grd,control = tune::control_resamples(verbose = TRUE, save_pred = TRUE))
 toc()</code></pre>
 </div>
-<p>The below code showed that the best model had an RSME of 88.2 at an mtry of 23 and a sample_size of 0.217.</p>
+<p>The below code showed that the best model had an RSME of 88.2 at an mtry of 23 and a sample_size of 0.217. Due to the fact that this model lead to our best results on our first run through with 5% of the data, we used this data for our predictions (see note under loss reduction for more explanation).</p>
 <div class="layout-chunk" data-layout="l-body">
 <pre class="r"><code>
 collect_metrics(tune_tree_rand)
@@ -1554,7 +1557,7 @@ collect_metrics(tune_tree_rand)
 show_best(tune_tree_rand, &quot;rmse&quot;)</code></pre>
 </div>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="randomness%20output.png" width="100%" /></p>
+<p><img src="randomness%20output%20white%20back.png" width="100%" /></p>
 </div>
 <p>You can see the output of this tuning model in the below plot, with the best values plotted in red.</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -1583,7 +1586,7 @@ ggplot(to_plot_rand, aes(tuning_val, mean)) +
   theme_minimal()</code></pre>
 </div>
 <div class="layout-chunk" data-layout="l-body">
-<p><img src="randomness%20plot%202.png" width="100%" /></p>
+<p><img src="random%20white%20back%20plot.png" width="100%" /></p>
 </div>
 <h3 id="lets-predict-the-test-set">Lets predict the test set</h3>
 <p>Now that we have a model we like and seems to be the lowest we are going to get after tuning the most important parameters of a boosted tree model, we are going to set it up to get predictions for the test set. To do this, we select our best model based on RSME from the randomness tuning model, then we finalize our model and recipe. We then apply our final recipe to the whole training set using prep() and bake(), before doing the same with our true test dataset. We have to read in the final testing dataset here because it was housed on Kaggle in a separte dataset to our training data.</p>
@@ -1613,7 +1616,7 @@ prepped_test &lt;- rec_tree_final  %&gt;%
   bake(real_test) %&gt;%
   select(-contains(&quot;id&quot;), -ncessch)</code></pre>
 </div>
-<p>We then run the final fit on our entire training data. The results of this model “full_train_fit” are then included in the function “predict()” to get predictions based on the prepped_test data. We then put these predictions in a dataframe with Id and create a csv to sumbit on kaggle (the desired submssion format for our class competition) to see how our model does predicting the test dataset.</p>
+<p>We then run the final fit on our entire training data. The results of this model “full_train_fit” are then included in the function “predict()” to get predictions based on the prepped_test data. We then put these predictions in a dataframe with Id and create a csv to submit on kaggle (the desired submission format for our class competition) to see how our model does predicting the test dataset.</p>
 <div class="layout-chunk" data-layout="l-body">
 <pre class="r"><code>
 full_train_fit &lt;- fit(tune_tree_final, score ~ ., prepped_train)
