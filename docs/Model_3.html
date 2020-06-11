@@ -1343,7 +1343,7 @@
 </ol>
 <h1 id="lets-look-at-the-code">Lets look at the code!</h1>
 <h3 id="splitting-the-data">Splitting the data</h3>
-<p>First, we split the training data of the overall dataset into training and testing sets and set-up cross validation. Not shown below is that we are using only 5% of the training data, as it took too long for our model to run otherwise. This can be done by adding “sample_frac(.05)” when reading the data in (even with 5%, all these models took 7.5 hours to run!).</p>
+<p>First, we split the training file of the overall data into training and testing sets and set-up cross validation. Not shown below is that we are using only 5% of the training data, as it took too long for our model to run otherwise. This can be done by adding “sample_frac(.05)” when reading the data in (even with 5%, all these models took almost 8 hours to run!).</p>
 <div class="layout-chunk" data-layout="l-body">
 <pre class="r"><code>
 splt &lt;- initial_split(data)
@@ -1351,7 +1351,7 @@ train &lt;- training(splt)
 cv &lt;- vfold_cv(train)</code></pre>
 </div>
 <h3 id="writing-the-recipe">Writing the recipe</h3>
-<p>Second, we write our recipe. This is the same as previous recipes used in prior models, where we clean the data appropriately using median imputation, dummy coding variables, and taking care of median imputation.</p>
+<p>Second, we write our recipe. This is the same as previous recipes used in prior models, see Preliminary Fit 1 for more information.</p>
 <div class="layout-chunk" data-layout="l-body">
 <pre class="r"><code>
 rec &lt;- recipe(score ~ ., train) %&gt;% 
@@ -1365,7 +1365,7 @@ rec &lt;- recipe(score ~ ., train) %&gt;%
   step_nzv(all_predictors())</code></pre>
 </div>
 <h3 id="setting-up-the-model">Setting up the model</h3>
-<p>Third, we set-up our model. For boosted trees, we are using the “xgboost” engine. We use “set_mode” to tell our model that we are running a regression. If we were doing a classification model, we would tell the model that here.</p>
+<p>Third, we set-up our model. For boosted trees, we are using the “xgboost” engine. We use “set_mode” to tell our model that we are running a regression.</p>
 <div class="layout-chunk" data-layout="l-body">
 <pre class="r"><code>
 mod &lt;- boost_tree() %&gt;% 
@@ -1373,7 +1373,7 @@ mod &lt;- boost_tree() %&gt;%
   set_mode(&quot;regression&quot;) </code></pre>
 </div>
 <h3 id="adding-recipe-and-model-to-a-workflow">Adding recipe and model to a workflow</h3>
-<p>We then add our model to a workflow. This will be helpful as we change our model by tuning different hyperparameters throughout the model fitting process, as we can simply update this workflow with that information as opposed to starting from scratch with new recipes, models, etc.</p>
+<p>We then add our model to a workflow. This will be helpful as we change our model by tuning different hyperparameters throughout the model fitting process, as we can simply update this workflow with that information as opposed to starting from scratch.</p>
 <div class="layout-chunk" data-layout="l-body">
 <pre class="r"><code>
 wf_df &lt;- workflow() %&gt;% 
@@ -1382,8 +1382,8 @@ wf_df &lt;- workflow() %&gt;%
 </div>
 <h3 id="tuning-the-learning-rate-between-the-optimum-values-of-.005-to-.3.">Tuning the learning rate between the optimum values of .005 to .3.</h3>
 <p>In this model, we set our number of trees at 6000, stop iterations at 20, and validation at 0.2. We picked a large number of trees because boosted trees are shallow models, so, to get a better fit, they need a larger number trees.</p>
-<p>We started tuning between .005 to .3 because smaller learning rates are seen as better and this range is a default starting point. You can see that we established tuning by telling our model that “learn_rate” is set to “tune()” and then providing the tuning range through “expand.grid.”</p>
-<p>We then run this first model! You can see how long the model takes by adding “tic()” and “toc()” around the model.</p>
+<p>We started tuning between .005 to .3 because smaller learning rates are seen as better and this range is a suggested starting point. You can see that we established tuning by telling our model that “learn_rate” is set to “tune()” and then providing the tuning range through “expand.grid.”</p>
+<p>We can then run our first model! You can see how long the model takes by adding “tic()” and “toc()” around the model. This model took 6078.83 seconds.</p>
 <div class="layout-chunk" data-layout="l-body">
 <pre class="r"><code>
 tune_lr &lt;- mod %&gt;% 
@@ -1401,7 +1401,7 @@ tic()
 tune_tree_lr &lt;- tune_grid(wf_tune_lr, cv, grid = grd, control = tune::control_resamples(verbose = TRUE, save_pred = TRUE))
 toc()</code></pre>
 </div>
-<p>Then we looked at the output and found the best value from the model. We assessed “best” by looking for the lowest RSME score. You can see the lowest RSME this model produced is 91.5 at a learning rate of 0.005.</p>
+<p>Then we looked at the output and found the best value from the model. We assessed “best” by looking for the lowest RSME score, which was 91.5 in this model at a learning rate of 0.005.</p>
 <div class="layout-chunk" data-layout="l-body">
 <pre class="r"><code>
 collect_metrics(tune_tree_lr)
@@ -1458,7 +1458,7 @@ tic()
 tune_tree_lr2 &lt;- tune_grid(wf_tune_lr, cv, grid = grd, control = tune::control_resamples(verbose = TRUE, save_pred = TRUE))
 toc()</code></pre>
 </div>
-<p>The results below demonstrate that this did not result in a better RSME score, with the lowest RSME being 93.0 at a learning rate of .00724. Therefore, we decided to build the model using the learning rate that lead to the lowest RSME score in the previous fit and tuning grid.</p>
+<p>This model took 5720.34 seconds to run. The results below demonstrate that this did not result in a better RSME score, with the lowest score being 93.0 at a learning rate of .00724. Therefore, we decided to build the next model using the learning rate that lead to the lowest RSME score in the previous fit.</p>
 <div class="layout-chunk" data-layout="l-body">
 <pre class="r"><code>
 collect_metrics(tune_tree_lr2)
@@ -1469,7 +1469,7 @@ show_best(tune_tree_lr2, &quot;rmse&quot;)</code></pre>
 <p><img src="lr2%20white%20back.png" width="100%" /></p>
 </div>
 <h3 id="tuning-tree-depth-and-minimum-n">Tuning tree depth and minimum n</h3>
-<p>In the code below, you can see that told our model to use the learning rate that lead to the best RSME in our first model using this code:</p>
+<p>In the code below, you can see that we told our model to use the learning rate that lead to the best RSME in our first model using this code:</p>
 <p>finalize_model(select_best(tune_tree_lr, “rmse”))</p>
 <p>We then set “tree_depth” and “min_n” to tune and updated our workflow. To tune both values, we used default ranges in tree_depth and min_n, but told “grid_max_entropy” to pick 30 of those values per fold.</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -1488,7 +1488,7 @@ tic()
 tune_tree_depth &lt;- tune_grid(wf_tune_depth, cv, grid = grd, control = tune::control_resamples(verbose = TRUE, save_pred = TRUE))
 toc()</code></pre>
 </div>
-<p>In the following results, you can see the best RSME was 87.7 at a tree depth of 2 and minimum n of 14.</p>
+<p>In the following results, you can see the best RSME was 87.7 at a tree depth of 2 and minimum n of 14. This model took 15551.17 seconds to run, over 4 hours!</p>
 <p><em>Note: We had to re-run these results because we forgot to take a screenshot of our previous tree depth model results after the first 8 hour run. In those results, the best model had an n of 38 and a depth of 1 and an RSME somewhere in 88. We based the following randomness model on that tree depth of 1. We re-ran these results overnight and did not see the difference until the entire analysis was completed. If we had, we would have continued with this model informing our randomness model and (as you will see later) as our overall best model.</em></p>
 <div class="layout-chunk" data-layout="l-body">
 <pre class="r"><code>
@@ -1517,7 +1517,7 @@ tic()
 tune_tree_reg &lt;- tune_grid(wf_tune_reg, cv, grid = grd, control = tune::control_resamples(verbose = TRUE, save_pred = TRUE))
 toc()</code></pre>
 </div>
-<p>As can be seen in the output below, tuning loss reduction actually worsened the results. Thus, we decided to ignore this model and do the next model using the best output from when we tuned tree depth and minimum n.</p>
+<p>As can be seen in the output below, tuning loss reduction actually worsened the results. Thus, we decided to ignore this model and do the next model using the best output from when we tuned tree depth and minimum n. This model took 1581.2 seconds.</p>
 <div class="layout-chunk" data-layout="l-body">
 <pre class="r"><code>
 collect_metrics(tune_tree_reg)
@@ -1549,7 +1549,7 @@ tic()
 tune_tree_rand &lt;- tune_grid(wf_tune_rand, cv, grid = grd,control = tune::control_resamples(verbose = TRUE, save_pred = TRUE))
 toc()</code></pre>
 </div>
-<p>The below code showed that the best model had an RSME of 88.2 at an mtry of 23 and a sample_size of 0.217. Due to the fact that this model lead to our best results on our first run through with 5% of the data, we used this data for our predictions (see note under loss reduction for more explanation).</p>
+<p>This model took 2683.02 seconds to run. The below code showed that the best model had an RSME of 88.2 at an mtry of 23 and a sample_size of 0.217. Due to the fact that this model lead to our best results on our first run through with 5% of the data, we used this data for our predictions (see note under loss reduction for more explanation).</p>
 <div class="layout-chunk" data-layout="l-body">
 <pre class="r"><code>
 collect_metrics(tune_tree_rand)
