@@ -21,27 +21,27 @@
   <!--radix_placeholder_meta_tags-->
   <title>Machine Learning Blog: About Model 1</title>
   
-  <meta property="description" itemprop="description" content="Learn more about our preliminary model"/>
+  <meta property="description" itemprop="description" content="Learn more about our first model"/>
   
   
   
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
   <meta property="og:title" content="Machine Learning Blog: About Model 1"/>
   <meta property="og:type" content="article"/>
-  <meta property="og:description" content="Learn more about our preliminary model"/>
+  <meta property="og:description" content="Learn more about our first model"/>
   <meta property="og:locale" content="en_US"/>
   <meta property="og:site_name" content="Machine Learning Blog"/>
   
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
   <meta property="twitter:title" content="Machine Learning Blog: About Model 1"/>
-  <meta property="twitter:description" content="Learn more about our preliminary model"/>
+  <meta property="twitter:description" content="Learn more about our first model"/>
   
   <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description"]}},"value":[{"type":"character","attributes":{},"value":["About Model 1"]},{"type":"character","attributes":{},"value":["Learn more about our preliminary model"]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description"]}},"value":[{"type":"character","attributes":{},"value":["About Model 1"]},{"type":"character","attributes":{},"value":["Learn more about our first model"]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   <!--radix_placeholder_navigation_in_header-->
@@ -1282,7 +1282,7 @@
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"About Model 1","description":"Learn more about our preliminary model","authors":[]}
+{"title":"About Model 1","description":"Learn more about our first model","authors":[]}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -1308,16 +1308,36 @@
 
 <div class="d-title">
 <h1>About Model 1</h1>
-<p><p>Learn more about our preliminary model</p></p>
+<p>Learn more about our first model</p>
 </div>
 
 
 <div class="d-article">
-<p>The purpose of preliminary fit 1 was to use basic feature engineering to make our initial predictions of test scores. We used a linear regression model with all variables in the data set (besides our outcome and ID variables). For this blog, we only sampled 10% of the data for computational efficiency.</p>
+<h1 id="overview-of-preliminary-fit-1">Overview of preliminary fit 1</h1>
+<p>The purpose of preliminary fit 1 was to use basic feature engineering to make our initial predictions of test scores. We used a linear regression model with all variables in the data set (besides our outcome and ID variables). For this blog, we only sampled 10% (using sampl_frac()) of the data for computational efficiency.</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+full_train &lt;- read.csv(here(&quot;data&quot;,&quot;train.csv&quot;)) %&gt;%
+                 select(-classification) %&gt;% 
+                 sample_frac(.10)</code></pre>
+</div>
+<h1 id="split-data-and-use-cv">Split data and use CV</h1>
+<h2 id="for-more-information-about-this-see-the-about-page">For more information about this see the about page</h2>
 <p>One of the biggest hurdles for learning and using machine learning (ML) is getting the right balance of bias-variance. The purpose of ML is to be able to predict unseen scores or data, so we use available data to model the best prediction. The bias reflects how well the model fits the structure of our data; low bias is good, where high bias ignores important details of our data. Variance reflects variability of our model predictions for a specific data point; flexible models are more likely to have higher variance and are prone to overfitting to the training data and not generalize well to new data. Ideally, our model would have low bias and low variance, but for our first model we will run a linear model which typically has a high bias and low variance.</p>
 <p>We used k-fold cross validation (CV) to split our training data into 10 distinct samples of data. Although k-fold may have more variability than other CV methods, it is the most widely used method. For each fold, 10% of the training data are sampled for assessment, and the remaining of the training data serve as our analysis set for that fold. Our performance measure (RMSE) will be the average RMSE across all 10 folds.</p>
-<p>The first thing we did was create a recipe (the regression equation that is usually defined inside of a lm call) that defined score as our dependent variable with all other variables predicting it.</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+set.seed(200)
+
+splt &lt;- initial_split(data)
+train &lt;- training(splt)
+
+cv &lt;- vfold_cv(train)</code></pre>
+</div>
+<h1 id="define-the-recipe">Define the recipe</h1>
+<p>Next we create a recipe (the regression equation that is usually defined inside of a lm call) that defined score as our dependent variable with all other variables predicting it.</p>
 <p>We assigned all school and id vars to “id_vars”, this ignores them as predictors and does not apply any of the following steps to these variables. Next, we took care of missing data with step_unknown and step_novel and treated missing data with mean imputation. We also fixed the date format and removed predictors that had no variance, and dummy coded nominal variables.</p>
+<p>As the “Inputs” displays, we have 6 ID variables, 1 outcome, and 40 predictors.</p>
 <div class="layout-chunk" data-layout="l-body">
 <pre class="r"><code>
 rec &lt;- recipe(score ~ ., train) %&gt;% 
@@ -1352,7 +1372,40 @@ Sparse, unbalanced variable filter on all_predictors
 Dummy variables from all_nominal
 Sparse, unbalanced variable filter on all_predictors</code></pre>
 </div>
-<p>As the “Inputs” displays, we have 6 ID variables, 1 outcome, and 40 predictors.</p>
+<h1 id="setting-up-the-model">Setting up the model</h1>
+<p>We specify that we want to a run a regression.</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+prep(rec)</code></pre>
+<pre><code>
+Data Recipe
+
+Inputs:
+
+      role #variables
+   id vars          6
+   outcome          1
+ predictor         40
+
+Training data contained 14208 data points and 14208 incomplete rows. 
+
+Operations:
+
+Variable mutation for tst_dt [trained]
+Median Imputation for enrl_grd, lat, ... [trained]
+Unknown factor level assignment for gndr, ethnic_cd, ... [trained]
+Novel factor level assignment for gndr, ethnic_cd, ... [trained]
+Sparse, unbalanced variable filter removed calc_admn_cd, ... [trained]
+Dummy variables from gndr, ethnic_cd, tst_bnch, ... [trained]
+Sparse, unbalanced variable filter removed gndr_unknown, ... [trained]</code></pre>
+<pre class="r"><code>
+mod &lt;- linear_reg() %&gt;%
+  set_engine(&quot;lm&quot;) %&gt;% 
+  set_mode(&quot;regression&quot;)
+
+cv &lt;- vfold_cv(train)</code></pre>
+</div>
+<h1 id="run-initial-model">Run initial model</h1>
 <div class="layout-chunk" data-layout="l-body">
 <pre class="r"><code>
 m1 &lt;- mod %&gt;% 
@@ -1365,7 +1418,11 @@ m1</code></pre>
 #  10-fold cross-validation 
 # A tibble: 10 x 4
    splits               id     .metrics         .notes          
+<<<<<<< Updated upstream
    &lt;list&gt;               &lt;chr&gt;  &lt;list&gt;           &lt;list&gt;          
+=======
+ * &lt;list&gt;               &lt;chr&gt;  &lt;list&gt;           &lt;list&gt;          
+>>>>>>> Stashed changes
  1 &lt;split [12.8K/1.4K]&gt; Fold01 &lt;tibble [2 x 3]&gt; &lt;tibble [1 x 1]&gt;
  2 &lt;split [12.8K/1.4K]&gt; Fold02 &lt;tibble [2 x 3]&gt; &lt;tibble [1 x 1]&gt;
  3 &lt;split [12.8K/1.4K]&gt; Fold03 &lt;tibble [2 x 3]&gt; &lt;tibble [1 x 1]&gt;
@@ -1377,7 +1434,8 @@ m1</code></pre>
  9 &lt;split [12.8K/1.4K]&gt; Fold09 &lt;tibble [2 x 3]&gt; &lt;tibble [1 x 1]&gt;
 10 &lt;split [12.8K/1.4K]&gt; Fold10 &lt;tibble [2 x 3]&gt; &lt;tibble [1 x 1]&gt;</code></pre>
 </div>
-<p>Our initial model without feature engineering produced a mean rmse of 87.8.</p>
+<h3 id="our-initial-model-without-feature-engineering-produced-a-mean-rmse-of-87.8.">Our initial model without feature engineering produced a mean rmse of 87.8.</h3>
+<p>These results will differ a litter bit every time the model is rerun. The RMSE for the full dataset was 87.8</p>
 <div class="layout-chunk" data-layout="l-body">
 <pre class="r"><code>
 m1 %&gt;%  
@@ -1387,8 +1445,13 @@ m1 %&gt;%
 # A tibble: 1 x 5
   .metric .estimator  mean     n std_err
   &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
+<<<<<<< Updated upstream
 1 rmse    standard    87.8    10   0.793</code></pre>
+=======
+1 rmse    standard    90.4    10   0.694</code></pre>
+>>>>>>> Stashed changes
 </div>
+<h1 id="refine-model">Refine model</h1>
 <p>In our next model we aimed to produce a more predictive model by using step_interact to model the interaction between longitude and latitude because we thought geographic location of schools would influence children’s test scores. We updated the recipe and used 10-fold CV again.</p>
 <div class="layout-chunk" data-layout="l-body">
 <pre class="r"><code>
@@ -1436,15 +1499,49 @@ m2 %&gt;%
 # A tibble: 1 x 5
   .metric .estimator  mean     n std_err
   &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
+<<<<<<< Updated upstream
 1 rmse    standard    87.8    10   0.796</code></pre>
+=======
+1 rmse    standard    90.4    10   0.702</code></pre>
+>>>>>>> Stashed changes
 </div>
+<h1 id="plot-most-important-variables">Plot most important variables</h1>
 <p>To better understand the predictive accuracy of our model, we can use a package called VIP to look at a plot of variable importance on score. We choose to examine variables we thought would be theoretically important for test scores, such as grade in school, ethnicity, whether children participated in a special education program or talented and gifted program, or qualified for a free or reduced lunch program (economic disadvantage). We also included the interaction between longitude and latitude since we thought it would improve our model.</p>
 <div class="layout-chunk" data-layout="l-body">
 <pre class="r"><code>
 plot1</code></pre>
-<p><img src="Model_1_files/figure-html5/unnamed-chunk-13-1.png" width="624" /></p>
+<p><img src="Model_1_files/figure-html5/plot-1.png" width="624" /></p>
 </div>
 <p>As seen in the plot, latitude and longitude do not seem to be a variable with a lot of importance in our model, and instead grade in school and whether a child participated in a special education program or talented and gifted program seemed to be the most important variables of the ones examined. The salmon color bars represent negative values, while teal bars represent positive values.</p>
+<p>#Predict the test set</p>
+<h2 id="the-last-step-is-to-you-use-the-recipe-and-model-to-predict-the-entire-training-set.">The last step is to you use the recipe and model to predict the entire training set.</h2>
+<p>We prepare this by using prep() and bake(), and lastly save the predicted score and subject ID to be able to upload out predictions to our class site on Kaggle.</p>
+We recieved an rmse of 90.42 for predicting the final test dataset.
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+prepped_train &lt;- rec2 %&gt;% 
+  prep() %&gt;% 
+  juice()
+
+full_train_fit &lt;- fit(mod, score ~ ., data = prepped_train)
+
+
+final_test &lt;- read.csv(here(&quot;data&quot;,&quot;test.csv&quot;))
+                       col_types = cols(.default = col_guess(), calc_admn_cd = col_character()) 
+
+final_test &lt;- left_join(final_test, frl, by = &quot;ncessch&quot;)
+
+prepped_test &lt;- rec2 %&gt;% 
+  prep() %&gt;% 
+  bake(final_test) 
+
+preds_test &lt;- prepped_test %&gt;% 
+  mutate(Predicted = predict(full_train_fit$fit, newdata = .)) %&gt;%
+  mutate(Id = final_test$id) %&gt;% 
+  select(Id, Predicted)
+
+write_csv(preds_test, &quot;submission.csv&quot;)</code></pre>
+</div>
 <p>This first model allowed us to get acquainted with ML and specifically using recipes. We started to use some feature engineering to make a more predictive model and will continue to do so in subsequent models.</p>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->

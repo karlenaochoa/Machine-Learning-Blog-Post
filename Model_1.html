@@ -19,29 +19,29 @@
  <!--/radix_placeholder_import_source-->
 
   <!--radix_placeholder_meta_tags-->
-  <title>Machine Learning Blog: Overview of Dataset</title>
+  <title>Machine Learning Blog: About Model 1</title>
   
-  <meta property="description" itemprop="description" content="Additional information regarding the data set can be found on Kaggle or in the data folder in our GitHub Repo."/>
+  <meta property="description" itemprop="description" content="Learn more about our first model"/>
   
   
   
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-  <meta property="og:title" content="Machine Learning Blog: Overview of Dataset"/>
+  <meta property="og:title" content="Machine Learning Blog: About Model 1"/>
   <meta property="og:type" content="article"/>
-  <meta property="og:description" content="Additional information regarding the data set can be found on Kaggle or in the data folder in our GitHub Repo."/>
+  <meta property="og:description" content="Learn more about our first model"/>
   <meta property="og:locale" content="en_US"/>
   <meta property="og:site_name" content="Machine Learning Blog"/>
   
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
-  <meta property="twitter:title" content="Machine Learning Blog: Overview of Dataset"/>
-  <meta property="twitter:description" content="Additional information regarding the data set can be found on Kaggle or in the data folder in our GitHub Repo."/>
+  <meta property="twitter:title" content="Machine Learning Blog: About Model 1"/>
+  <meta property="twitter:description" content="Learn more about our first model"/>
   
   <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description"]}},"value":[{"type":"character","attributes":{},"value":["Overview of Dataset"]},{"type":"character","attributes":{},"value":["Additional information regarding the data set can be found on Kaggle or in the data folder in our GitHub Repo."]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description"]}},"value":[{"type":"character","attributes":{},"value":["About Model 1"]},{"type":"character","attributes":{},"value":["Learn more about our first model"]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   <!--radix_placeholder_navigation_in_header-->
@@ -1282,7 +1282,7 @@
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Overview of Dataset","description":"Additional information regarding the data set can be found on Kaggle or in the data folder in our GitHub Repo.","authors":[]}
+{"title":"About Model 1","description":"Learn more about our first model","authors":[]}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -1307,433 +1307,206 @@
 <!--/radix_placeholder_site_before_body-->
 
 <div class="d-title">
-<h1>Overview of Dataset</h1>
-<p>Additional information regarding the data set can be found on Kaggle or in the data folder in our GitHub Repo.</p>
+<h1>About Model 1</h1>
+<p>Learn more about our first model</p>
 </div>
 
 
 <div class="d-article">
-<p>Our final machine learning project was to use all the skills we have learned this term to make the best predictive model of students’ test scores (math and reading) for children in grades 3-8. We specifically used data from Oregon schools and included longitude and latitude to be able to control for geographic location (rural vs urban schools). We added data from the National Center for Educational Statistics about the number of students who receive free or reduced lunch for every school in Oregon. We then calculated for the number of students and proportion of students receiving free or reduced lunch across each grade per school district.</p>
-<p>Our data set contains 47 variables: 11 continuous variables and 36 categorical variables. Means and standard deviation for continuous variables are displayed below. A list and description of all variables can be found on <a href="https://www.kaggle.com/c/edld-654-spring-2020/data">Kaggle</a> or in the data folder in our <a href="https://github.com/karlenaochoa/Machine-Learning-Blog-Post">GitHub</a> Repo. Some of the categorical variables include gender, ethnicity, grade in school, whether a child participated in a Talented and gifted (TAG) program or Special Ed program.</p>
-<p>Although initially we had hoped to use mean imputation for missing data it caused our models not to run so we ended up using median imputation to provided estimates for missing data. To see if our models could produce adequate out-of-sample predictive accuracy, we split our raw data into a training set (75%) and a test set (25%). All feature engineering for data and models was conducted on the training set, and the test set remained untouched until the model was finalized for the training data set. To test the accuracy of our model, we used Root Mean Square Error (RMSE) to examine performance.</p>
-<p>Table 1.</p>
+<h1 id="overview-of-preliminary-fit-1">Overview of preliminary fit 1</h1>
+<p>The purpose of preliminary fit 1 was to use basic feature engineering to make our initial predictions of test scores. We used a linear regression model with all variables in the data set (besides our outcome and ID variables). For this blog, we only sampled 10% (using sampl_frac()) of the data for computational efficiency.</p>
 <div class="layout-chunk" data-layout="l-body">
-<style>html {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
-}
-
-#wwhkyrlkce .gt_table {
-  display: table;
-  border-collapse: collapse;
-  margin-left: auto;
-  margin-right: auto;
-  color: #333333;
-  font-size: 16px;
-  background-color: #FFFFFF;
-  width: auto;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #A8A8A8;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #A8A8A8;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-}
-
-#wwhkyrlkce .gt_heading {
-  background-color: #FFFFFF;
-  text-align: center;
-  border-bottom-color: #FFFFFF;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#wwhkyrlkce .gt_title {
-  color: #333333;
-  font-size: 125%;
-  font-weight: initial;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  border-bottom-color: #FFFFFF;
-  border-bottom-width: 0;
-}
-
-#wwhkyrlkce .gt_subtitle {
-  color: #333333;
-  font-size: 85%;
-  font-weight: initial;
-  padding-top: 0;
-  padding-bottom: 4px;
-  border-top-color: #FFFFFF;
-  border-top-width: 0;
-}
-
-#wwhkyrlkce .gt_bottom_border {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#wwhkyrlkce .gt_col_headings {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#wwhkyrlkce .gt_col_heading {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 6px;
-  padding-left: 5px;
-  padding-right: 5px;
-  overflow-x: hidden;
-}
-
-#wwhkyrlkce .gt_column_spanner_outer {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  padding-top: 0;
-  padding-bottom: 0;
-  padding-left: 4px;
-  padding-right: 4px;
-}
-
-#wwhkyrlkce .gt_column_spanner_outer:first-child {
-  padding-left: 0;
-}
-
-#wwhkyrlkce .gt_column_spanner_outer:last-child {
-  padding-right: 0;
-}
-
-#wwhkyrlkce .gt_column_spanner {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 6px;
-  overflow-x: hidden;
-  display: inline-block;
-  width: 100%;
-}
-
-#wwhkyrlkce .gt_group_heading {
-  padding: 8px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-}
-
-#wwhkyrlkce .gt_empty_group_heading {
-  padding: 0.5px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: middle;
-}
-
-#wwhkyrlkce .gt_striped {
-  background-color: rgba(128, 128, 128, 0.05);
-}
-
-#wwhkyrlkce .gt_from_md > :first-child {
-  margin-top: 0;
-}
-
-#wwhkyrlkce .gt_from_md > :last-child {
-  margin-bottom: 0;
-}
-
-#wwhkyrlkce .gt_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  margin: 10px;
-  border-top-style: solid;
-  border-top-width: 1px;
-  border-top-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-  overflow-x: hidden;
-}
-
-#wwhkyrlkce .gt_stub {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-right-style: solid;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  padding-left: 12px;
-}
-
-#wwhkyrlkce .gt_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#wwhkyrlkce .gt_first_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-}
-
-#wwhkyrlkce .gt_grand_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#wwhkyrlkce .gt_first_grand_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-style: double;
-  border-top-width: 6px;
-  border-top-color: #D3D3D3;
-}
-
-#wwhkyrlkce .gt_table_body {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#wwhkyrlkce .gt_footnotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#wwhkyrlkce .gt_footnote {
-  margin: 0px;
-  font-size: 90%;
-  padding: 4px;
-}
-
-#wwhkyrlkce .gt_sourcenotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#wwhkyrlkce .gt_sourcenote {
-  font-size: 90%;
-  padding: 4px;
-}
-
-#wwhkyrlkce .gt_left {
-  text-align: left;
-}
-
-#wwhkyrlkce .gt_center {
-  text-align: center;
-}
-
-#wwhkyrlkce .gt_right {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-#wwhkyrlkce .gt_font_normal {
-  font-weight: normal;
-}
-
-#wwhkyrlkce .gt_font_bold {
-  font-weight: bold;
-}
-
-#wwhkyrlkce .gt_font_italic {
-  font-style: italic;
-}
-
-#wwhkyrlkce .gt_super {
-  font-size: 65%;
-}
-
-#wwhkyrlkce .gt_footnote_marks {
-  font-style: italic;
-  font-size: 65%;
-}
-</style>
-<div id="wwhkyrlkce" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;"><table class="gt_table">
-  
-  <thead class="gt_col_headings">
-    <tr>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">skim_variable</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">numeric.mean</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">numeric.sd</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">n_missing</th>
-    </tr>
-  </thead>
-  <tbody class="gt_table_body">
-    <tr>
-      <td class="gt_row gt_left">enrl_grd</td>
-      <td class="gt_row gt_right">5.429</td>
-      <td class="gt_row gt_right">1.711</td>
-      <td class="gt_row gt_right">0</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left">score</td>
-      <td class="gt_row gt_right">2496.057</td>
-      <td class="gt_row gt_right">117.482</td>
-      <td class="gt_row gt_right">0</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left">lat</td>
-      <td class="gt_row gt_right">44.769</td>
-      <td class="gt_row gt_right">0.992</td>
-      <td class="gt_row gt_right">25</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left">lon</td>
-      <td class="gt_row gt_right">-122.480</td>
-      <td class="gt_row gt_right">1.281</td>
-      <td class="gt_row gt_right">25</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left">p_american_indian_alaska_native</td>
-      <td class="gt_row gt_right">0.012</td>
-      <td class="gt_row gt_right">0.047</td>
-      <td class="gt_row gt_right">2</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left">p_asian</td>
-      <td class="gt_row gt_right">0.039</td>
-      <td class="gt_row gt_right">0.071</td>
-      <td class="gt_row gt_right">2</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left">p_native_hawaiian_pacific_islander</td>
-      <td class="gt_row gt_right">0.008</td>
-      <td class="gt_row gt_right">0.012</td>
-      <td class="gt_row gt_right">2</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left">p_black_african_american</td>
-      <td class="gt_row gt_right">0.020</td>
-      <td class="gt_row gt_right">0.037</td>
-      <td class="gt_row gt_right">2</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left">p_hispanic_latino</td>
-      <td class="gt_row gt_right">0.249</td>
-      <td class="gt_row gt_right">0.190</td>
-      <td class="gt_row gt_right">2</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left">p_white</td>
-      <td class="gt_row gt_right">0.604</td>
-      <td class="gt_row gt_right">0.201</td>
-      <td class="gt_row gt_right">2</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left">p_multiracial</td>
-      <td class="gt_row gt_right">0.066</td>
-      <td class="gt_row gt_right">0.033</td>
-      <td class="gt_row gt_right">2</td>
-    </tr>
-  </tbody>
-  
-  
-</table></div>
+<pre class="r"><code>
+full_train &lt;- read.csv(here(&quot;data&quot;,&quot;train.csv&quot;)) %&gt;%
+                 select(-classification) %&gt;% 
+                 sample_frac(.10)</code></pre>
 </div>
+<h1 id="split-data-and-use-cv">Split data and use CV</h1>
+<h3 id="for-more-information-about-this-see-the-about-page">For more information about this see the about page</h3>
+<p>One of the biggest hurdles for learning and using machine learning (ML) is getting the right balance of bias-variance. The purpose of ML is to be able to predict unseen scores or data, so we use available data to model the best prediction. The bias reflects how well the model fits the structure of our data; low bias is good, where high bias ignores important details of our data. Variance reflects variability of our model predictions for a specific data point; flexible models are more likely to have higher variance and are prone to overfitting to the training data and not generalize well to new data. Ideally, our model would have low bias and low variance, but for our first model we will run a linear model which typically has a high bias and low variance.</p>
+<p>We used k-fold cross validation (CV) to split our training data into 10 distinct samples of data. Although k-fold may have more variability than other CV methods, it is the most widely used method. For each fold, 10% of the training data are sampled for assessment, and the remaining of the training data serve as our analysis set for that fold. Our performance measure (RMSE) will be the average RMSE across all 10 folds.</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+set.seed(200)
+
+splt &lt;- initial_split(data)
+train &lt;- training(splt)
+
+cv &lt;- vfold_cv(train)</code></pre>
+</div>
+<h1 id="define-the-recipe">Define the recipe</h1>
+<p>Next we create a recipe (the regression equation that is usually defined inside of a lm call) that defined score as our dependent variable with all other variables predicting it.</p>
+<p>We assigned all school and id vars to “id_vars”, this ignores them as predictors and does not apply any of the following steps to these variables. Next, we took care of missing data with step_unknown and step_novel and treated missing data with mean imputation. We also fixed the date format and removed predictors that had no variance, and dummy coded nominal variables.</p>
+<p>As the “Inputs” displays, we have 6 ID variables, 1 outcome, and 40 predictors.</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+rec &lt;- recipe(score ~ ., train) %&gt;% 
+  step_mutate(tst_dt = lubridate::mdy_hms(tst_dt)) %&gt;%
+  update_role(contains(&quot;id&quot;), ncessch, new_role = &quot;id vars&quot;) %&gt;% 
+  step_medianimpute(all_numeric(), -all_outcomes(), -has_role(&quot;id vars&quot;))  %&gt;% 
+  step_unknown(all_nominal()) %&gt;% 
+  step_novel(all_nominal()) %&gt;%
+  step_nzv(all_predictors(), freq_cut = 0, unique_cut = 0)  %&gt;% 
+  step_dummy(all_nominal())  %&gt;% 
+  step_nzv(all_predictors())
+  
+
+rec</code></pre>
+<pre><code>
+Data Recipe
+
+Inputs:
+
+      role #variables
+   id vars          6
+   outcome          1
+ predictor         40
+
+Operations:
+
+Variable mutation for tst_dt
+Median Imputation for all_numeric, -, all_outcomes(), ...
+Unknown factor level assignment for all_nominal
+Novel factor level assignment for all_nominal
+Sparse, unbalanced variable filter on all_predictors
+Dummy variables from all_nominal
+Sparse, unbalanced variable filter on all_predictors</code></pre>
+</div>
+<h1 id="setting-up-the-model">Setting up the model</h1>
+<p>We specify that we want to a run a regression.</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+mod &lt;- linear_reg() %&gt;%
+  set_engine(&quot;lm&quot;) %&gt;% 
+  set_mode(&quot;regression&quot;)
+
+cv &lt;- vfold_cv(train)</code></pre>
+</div>
+<h1 id="run-initial-model">Run initial model</h1>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+m1 &lt;- mod %&gt;% 
+  fit_resamples(preprocessor = rec,
+                resamples = cv,
+                control = control_resamples(verbose = TRUE))
+
+m1</code></pre>
+<pre><code>
+#  10-fold cross-validation 
+# A tibble: 10 x 4
+   splits               id     .metrics         .notes          
+ * &lt;list&gt;               &lt;chr&gt;  &lt;list&gt;           &lt;list&gt;          
+ 1 &lt;split [12.8K/1.4K]&gt; Fold01 &lt;tibble [2 x 3]&gt; &lt;tibble [1 x 1]&gt;
+ 2 &lt;split [12.8K/1.4K]&gt; Fold02 &lt;tibble [2 x 3]&gt; &lt;tibble [1 x 1]&gt;
+ 3 &lt;split [12.8K/1.4K]&gt; Fold03 &lt;tibble [2 x 3]&gt; &lt;tibble [1 x 1]&gt;
+ 4 &lt;split [12.8K/1.4K]&gt; Fold04 &lt;tibble [2 x 3]&gt; &lt;tibble [1 x 1]&gt;
+ 5 &lt;split [12.8K/1.4K]&gt; Fold05 &lt;tibble [2 x 3]&gt; &lt;tibble [1 x 1]&gt;
+ 6 &lt;split [12.8K/1.4K]&gt; Fold06 &lt;tibble [2 x 3]&gt; &lt;tibble [1 x 1]&gt;
+ 7 &lt;split [12.8K/1.4K]&gt; Fold07 &lt;tibble [2 x 3]&gt; &lt;tibble [1 x 1]&gt;
+ 8 &lt;split [12.8K/1.4K]&gt; Fold08 &lt;tibble [2 x 3]&gt; &lt;tibble [1 x 1]&gt;
+ 9 &lt;split [12.8K/1.4K]&gt; Fold09 &lt;tibble [2 x 3]&gt; &lt;tibble [1 x 1]&gt;
+10 &lt;split [12.8K/1.4K]&gt; Fold10 &lt;tibble [2 x 3]&gt; &lt;tibble [1 x 1]&gt;</code></pre>
+</div>
+<h3 id="our-initial-model-without-feature-engineering-produced-a-mean-rmse-of-87.8.">Our initial model without feature engineering produced a mean rmse of 87.8.</h3>
+<p>These results will differ a litte bit every time the model is rerun (because we only sampled 10% of the data). The RMSE for the full dataset was 87.8</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+m1 %&gt;%  
+  collect_metrics() %&gt;% 
+  filter(`.metric` == &quot;rmse&quot;)</code></pre>
+<pre><code>
+# A tibble: 1 x 5
+  .metric .estimator  mean     n std_err
+  &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
+1 rmse    standard    87.9    10   0.381</code></pre>
+</div>
+<h1 id="refine-model">Refine model</h1>
+<p>In our next model we aimed to produce a more predictive model by using step_interact to model the interaction between longitude and latitude because we thought geographic location of schools would influence children’s test scores. We updated the recipe and used 10-fold CV again.</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+rec2 &lt;- recipe(score ~ ., train) %&gt;% 
+  step_mutate(tst_dt = lubridate::mdy_hms(tst_dt)) %&gt;%
+  update_role(contains(&quot;id&quot;), ncessch, new_role = &quot;id vars&quot;) %&gt;% 
+  step_medianimpute(all_numeric(), -all_outcomes(), -has_role(&quot;id vars&quot;))  %&gt;% 
+  step_unknown(all_nominal()) %&gt;% 
+  step_novel(all_nominal()) %&gt;%
+  step_nzv(all_predictors(), freq_cut = 0, unique_cut = 0)  %&gt;% 
+  step_dummy(all_nominal())  %&gt;% 
+  step_nzv(all_predictors())  %&gt;% 
+  step_interact(terms = ~ lat:lon) 
+  
+
+rec2</code></pre>
+<pre><code>
+Data Recipe
+
+Inputs:
+
+      role #variables
+   id vars          6
+   outcome          1
+ predictor         40
+
+Operations:
+
+Variable mutation for tst_dt
+Median Imputation for all_numeric, -, all_outcomes(), ...
+Unknown factor level assignment for all_nominal
+Novel factor level assignment for all_nominal
+Sparse, unbalanced variable filter on all_predictors
+Dummy variables from all_nominal
+Sparse, unbalanced variable filter on all_predictors
+Interactions with lat:lon</code></pre>
+</div>
+<p>This model produced the same average rmse as in model 1, 87.8. We decided to keep this as our final model.</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+m2 %&gt;%  
+  collect_metrics() %&gt;% 
+  filter(`.metric` == &quot;rmse&quot;)</code></pre>
+<pre><code>
+# A tibble: 1 x 5
+  .metric .estimator  mean     n std_err
+  &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
+1 rmse    standard    87.8    10   0.391</code></pre>
+</div>
+<h1 id="plot-most-important-variables">Plot most important variables</h1>
+<p>To better understand the predictive accuracy of our model, we can use a package called VIP to look at a plot of variable importance on score. We choose to examine variables we thought would be theoretically important for test scores, such as grade in school, ethnicity, whether children participated in a special education program or talented and gifted program, or qualified for a free or reduced lunch program (economic disadvantage). We also included the interaction between longitude and latitude since we thought it would improve our model.</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+plot1</code></pre>
+<p><img src="Model_1_files/figure-html5/plot-1.png" width="624" /></p>
+</div>
+<p>As seen in the plot, latitude and longitude do not seem to be a variable with a lot of importance in our model, and instead grade in school and whether a child participated in a special education program or talented and gifted program seemed to be the most important variables of the ones examined. The salmon color bars represent negative values, while teal bars represent positive values.</p>
+<h1 id="predict-the-test-set">Predict the test set</h1>
+<h3 id="the-last-step-is-to-you-use-the-recipe-and-model-to-predict-the-entire-training-set.">The last step is to you use the recipe and model to predict the entire training set.</h3>
+<p>We prepare for this process this by using prep() and bake(). Then we save the predicted score and subject ID to be able to upload out predictions to our class site on Kaggle. We recieved an rmse of 90.42 for predicting the final test dataset.</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+prepped_train &lt;- rec2 %&gt;% 
+  prep() %&gt;% 
+  juice()
+
+full_train_fit &lt;- fit(mod, score ~ ., data = prepped_train)
+
+
+final_test &lt;- read.csv(here(&quot;data&quot;,&quot;test.csv&quot;))
+                       col_types = cols(.default = col_guess(), calc_admn_cd = col_character()) 
+
+final_test &lt;- left_join(final_test, frl, by = &quot;ncessch&quot;)
+
+prepped_test &lt;- rec2 %&gt;% 
+  prep() %&gt;% 
+  bake(final_test) 
+
+preds_test &lt;- prepped_test %&gt;% 
+  mutate(Predicted = predict(full_train_fit$fit, newdata = .)) %&gt;%
+  mutate(Id = final_test$id) %&gt;% 
+  select(Id, Predicted)
+
+write_csv(preds_test, &quot;submission.csv&quot;)</code></pre>
+</div>
+<h2 id="this-first-model-allowed-us-to-get-acquainted-with-ml-and-specifically-using-recipes.-we-started-to-use-some-feature-engineering-to-make-a-more-predictive-model-and-will-continue-to-do-so-in-subsequent-models.">This first model allowed us to get acquainted with ML and specifically using recipes. We started to use some feature engineering to make a more predictive model and will continue to do so in subsequent models.</h2>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>

@@ -1,7 +1,7 @@
 ---
 title: "About Model 1"
 description: |
-  Learn more about our preliminary model
+  Learn more about our first model
 ---
 
 ```{r setup, include=FALSE}
@@ -18,14 +18,21 @@ library(baguette)
 library(recipes)
 library(tune)
 
+```
+
+# Overview of preliminary fit 1 
+
+The purpose of preliminary fit 1 was to use basic feature engineering to make our initial predictions of test scores. We used a linear regression model with all variables in the data set (besides our outcome and ID variables). For this blog, we only sampled 10% (using sampl_frac()) of the data for computational efficiency. 
+
+```{r read in data}
 
 full_train <- read.csv(here("data","train.csv")) %>%
                  select(-classification) %>% 
                  sample_frac(.10)
-
 ```
 
-```{r include = FALSE}
+
+```{r import data and combine, include = FALSE}
 
 frl <- import("https://nces.ed.gov/ccd/Data/zip/ccd_sch_033_1718_l_1a_083118.zip",
               setclass = "tbl_df")  %>% 
@@ -52,31 +59,44 @@ frl <- frl  %>%
 
 ```
 
-```{r include = FALSE}
+
+```{r data join, include = FALSE}
 data <- left_join(full_train, frl, join_by = ncessch)
 
 head(data)
 ```
 
-```{r include = FALSE}
-set.seed(200)
-splt <- initial_split(data)
-train <- training(splt)
-```
+# Split data and use CV
 
-
-The purpose of preliminary fit 1 was to use basic feature engineering to make our initial predictions of test scores. We used a linear regression model with all variables in the data set (besides our outcome and ID variables). For this blog, we only sampled 10% of the data for computational efficiency. 
+### For more information about this see the about page
 
 One of the biggest hurdles for learning and using machine learning (ML) is getting the right balance of bias-variance. The purpose of ML is to be able to predict unseen scores or data, so we use available data to model the best prediction. The bias reflects how well the model fits the structure of our data; low bias is good, where high bias ignores important details of our data. Variance reflects variability of our model predictions for a specific data point; flexible models are more likely to have higher variance and are prone to overfitting to the training data and not generalize well to new data. Ideally, our model would have low bias and low variance, but for our first model we will run a linear model which typically has a high bias and low variance. 
 
+
 We used k-fold cross validation (CV) to split our training data into 10 distinct samples of data. Although k-fold may have more variability than other CV methods, it is the most widely used method.  For each fold, 10% of the training data are sampled for assessment, and the remaining of the training data serve as our analysis set for that fold. Our performance measure (RMSE) will be the average RMSE across all 10 folds.
 
+```{r data split}
 
-The first thing we did was create a recipe (the regression equation that is usually defined inside of a lm call) that defined score as our dependent variable with all other variables predicting it. 
+set.seed(200)
+
+splt <- initial_split(data)
+train <- training(splt)
+
+cv <- vfold_cv(train)
+
+```
+
+
+# Define the recipe 
+
+Next we create a recipe (the regression equation that is usually defined inside of a lm call) that defined score as our dependent variable with all other variables predicting it. 
 
 We assigned all school and id vars to "id_vars", this ignores them as predictors and does not apply any of the following steps to these variables. Next, we took care of missing data with step_unknown and step_novel and treated missing data with mean imputation. We also fixed the date format and removed predictors that had no variance, and dummy coded nominal variables. 
 
-```{r}
+
+As the "Inputs" displays, we have 6 ID variables, 1 outcome, and 40 predictors. 
+
+```{r rec 1}
 rec <- recipe(score ~ ., train) %>% 
   step_mutate(tst_dt = lubridate::mdy_hms(tst_dt)) %>%
   update_role(contains("id"), ncessch, new_role = "id vars") %>% 
@@ -91,10 +111,12 @@ rec <- recipe(score ~ ., train) %>%
 rec
 ```
 
-As the "Inputs" displays, we have 6 ID variables, 1 outcome, and 40 predictors. 
+# Setting up the model
 
-```{r include = FALSE}
-prep(rec)
+We specify that we want to a run a regression.
+
+
+```{r set model}
 
 mod <- linear_reg() %>%
   set_engine("lm") %>% 
@@ -103,8 +125,9 @@ mod <- linear_reg() %>%
 cv <- vfold_cv(train)
 ```
 
+# Run initial model 
 
-```{r inlcude = FALSE}
+```{r run mode 1, inlcude = FALSE}
 m1 <- mod %>% 
   fit_resamples(preprocessor = rec,
                 resamples = cv,
@@ -113,19 +136,21 @@ m1 <- mod %>%
 m1
 ```
 
-Our initial model without feature engineering produced a mean rmse of 87.8. 
+### Our initial model without feature engineering produced a mean rmse of 87.8. 
 
-```{r}
+ These results will differ a litte bit every time the model is rerun (because we only sampled 10% of the data). The RMSE for the full dataset was 87.8
+ 
+```{r inital rmse}
 m1 %>%  
   collect_metrics() %>% 
   filter(`.metric` == "rmse")
 ```
 
-
+# Refine model 
 
 In our next model we aimed to produce a more predictive model by using step_interact to model the interaction between longitude and latitude because we thought geographic location of schools would influence children’s test scores. We updated the recipe and used 10-fold CV again.
 
-```{r}
+```{r rec 2}
 rec2 <- recipe(score ~ ., train) %>% 
   step_mutate(tst_dt = lubridate::mdy_hms(tst_dt)) %>%
   update_role(contains("id"), ncessch, new_role = "id vars") %>% 
@@ -141,7 +166,7 @@ rec2 <- recipe(score ~ ., train) %>%
 rec2
 ```
 
-```{r include = FALSE}
+```{r mod 2, include = FALSE}
 m2 <- mod %>% 
   fit_resamples(preprocessor = rec2,
                 resamples = cv,
@@ -152,13 +177,13 @@ m2
 
 This model produced the same average rmse as in model 1, 87.8. We decided to keep this as our final model. 
 
-```{r}
+```{r rmse 2}
 m2 %>%  
   collect_metrics() %>% 
   filter(`.metric` == "rmse")
 ```
 
-```{r include = FALSE}
+```{r vip, include = FALSE}
 
 train2 <- select(train, -contains("id"), -ncessch, -tst_dt)
 
@@ -166,20 +191,54 @@ vip_m2 <- vip(lm(score ~ lat:lon + tag_ed_fg + sp_ed_fg + ethnic_cd + econ_dsvnt
               
 ```
 
-
+# Plot most important variables 
 To better understand the predictive accuracy of our model, we can use a package called VIP to look at a plot of variable importance on score. We choose to examine variables we thought would be theoretically important for test scores, such as grade in school, ethnicity, whether children participated in a special education program or talented and gifted program, or qualified for a free or reduced lunch program (economic disadvantage). We also included the interaction between longitude and latitude since we thought it would improve our model. 
 
-```{r include = FALSE}
+```{r plot1, include = FALSE}
 plot1 <- vip_m2 +
   theme_minimal() +
   labs(title = "Variable importance plot for model 1",
        y = "Variable importance")
 ```
 
-```{r}
+```{r plot}
 plot1
 ```
 
 As seen in the plot, latitude and longitude do not seem to be a variable with a lot of importance in our model, and instead grade in school and whether a child participated in a special education program or talented and gifted program seemed to be the most important variables of the ones examined. The salmon color bars represent negative values, while teal bars represent positive values. 
 
-This first model allowed us to get acquainted with ML and specifically using recipes. We started to use some feature engineering to make a more predictive model and will continue to do so in subsequent models. 
+
+# Predict the test set
+
+### The last step is to you use the recipe and model to predict the entire training set.
+
+We prepare for this process this by using prep() and bake(). Then we save the predicted score and subject ID to be able to upload out predictions to our class site on Kaggle. We recieved an rmse of 90.42 for predicting the final test dataset. 
+
+```{r final test, eval = FALSE, include = TRUE}
+
+prepped_train <- rec2 %>% 
+  prep() %>% 
+  juice()
+
+full_train_fit <- fit(mod, score ~ ., data = prepped_train)
+
+
+final_test <- read.csv(here("data","test.csv"))
+                       col_types = cols(.default = col_guess(), calc_admn_cd = col_character()) 
+
+final_test <- left_join(final_test, frl, by = "ncessch")
+
+prepped_test <- rec2 %>% 
+  prep() %>% 
+  bake(final_test) 
+
+preds_test <- prepped_test %>% 
+  mutate(Predicted = predict(full_train_fit$fit, newdata = .)) %>%
+  mutate(Id = final_test$id) %>% 
+  select(Id, Predicted)
+
+write_csv(preds_test, "submission.csv")
+```
+
+
+## This first model allowed us to get acquainted with ML and specifically using recipes. We started to use some feature engineering to make a more predictive model and will continue to do so in subsequent models. 

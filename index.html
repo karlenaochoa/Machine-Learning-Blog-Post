@@ -19,29 +19,26 @@
  <!--/radix_placeholder_import_source-->
 
   <!--radix_placeholder_meta_tags-->
-  <title>Machine Learning Blog: Overview of Dataset</title>
+  <title>Machine Learning Blog: My Blog</title>
   
-  <meta property="description" itemprop="description" content="Additional information regarding the data set can be found on Kaggle or in the data folder in our GitHub Repo."/>
   
   
   
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
-  <meta property="og:title" content="Machine Learning Blog: Overview of Dataset"/>
+  <meta property="og:title" content="Machine Learning Blog: My Blog"/>
   <meta property="og:type" content="article"/>
-  <meta property="og:description" content="Additional information regarding the data set can be found on Kaggle or in the data folder in our GitHub Repo."/>
   <meta property="og:locale" content="en_US"/>
   <meta property="og:site_name" content="Machine Learning Blog"/>
   
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
-  <meta property="twitter:title" content="Machine Learning Blog: Overview of Dataset"/>
-  <meta property="twitter:description" content="Additional information regarding the data set can be found on Kaggle or in the data folder in our GitHub Repo."/>
+  <meta property="twitter:title" content="Machine Learning Blog: My Blog"/>
   
   <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description"]}},"value":[{"type":"character","attributes":{},"value":["Overview of Dataset"]},{"type":"character","attributes":{},"value":["Additional information regarding the data set can be found on Kaggle or in the data folder in our GitHub Repo."]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","site","listing"]}},"value":[{"type":"character","attributes":{},"value":["My Blog"]},{"type":"character","attributes":{},"value":["distill::distill_website"]},{"type":"character","attributes":{},"value":["posts"]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   <!--radix_placeholder_navigation_in_header-->
@@ -1277,12 +1274,12 @@
 
 </head>
 
-<body>
+<body class="layout-listing">
 
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"Overview of Dataset","description":"Additional information regarding the data set can be found on Kaggle or in the data folder in our GitHub Repo.","authors":[]}
+{"title":"My Blog","authors":[]}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -1305,435 +1302,354 @@
 <!--/radix_placeholder_navigation_before_body-->
 <!--radix_placeholder_site_before_body-->
 <!--/radix_placeholder_site_before_body-->
+<!--radix_placeholder_article_listing-->
+
+<style type="text/css">
+
+/* Styles for listing layout (hide title) */
+.layout-listing d-title, .layout-listing .d-title {
+  display: none;
+}
+
+/* Styles for posts lists (not auto-injected) */
+
+
+.posts-with-sidebar {
+  padding-left: 45px;
+  padding-right: 45px;
+}
+
+.posts-list .description h2,
+.posts-list .description p {
+  font-family: -apple-system, BlinkMacSystemFont, "Segoe UI", Roboto, Oxygen, Ubuntu, Cantarell, "Fira Sans", "Droid Sans", "Helvetica Neue", Arial, sans-serif;
+}
+
+.posts-list .description h2 {
+  font-weight: 700;
+  border-bottom: none;
+  padding-bottom: 0;
+}
+
+.posts-list h2.post-tag {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.2);
+  padding-bottom: 12px;
+}
+.posts-list {
+  margin-top: 60px;
+  margin-bottom: 24px;
+}
+
+.posts-list .post-preview {
+  text-decoration: none;
+  overflow: hidden;
+  display: block;
+  border-bottom: 1px solid rgba(0, 0, 0, 0.1);
+  padding: 24px 0;
+}
+
+.post-preview-last {
+  border-bottom: none !important;
+}
+
+.posts-list .posts-list-caption {
+  grid-column: screen;
+  font-weight: 400;
+}
+
+.posts-list .post-preview h2 {
+  margin: 0 0 6px 0;
+  line-height: 1.2em;
+  font-style: normal;
+  font-size: 24px;
+}
+
+.posts-list .post-preview p {
+  margin: 0 0 12px 0;
+  line-height: 1.4em;
+  font-size: 16px;
+}
+
+.posts-list .post-preview .thumbnail {
+  box-sizing: border-box;
+  margin-bottom: 24px;
+  position: relative;
+  max-width: 500px;
+}
+.posts-list .post-preview img {
+  width: 100%;
+  display: block;
+}
+
+.posts-list .metadata {
+  font-size: 12px;
+  line-height: 1.4em;
+  margin-bottom: 18px;
+}
+
+.posts-list .metadata > * {
+  display: inline-block;
+}
+
+.posts-list .metadata .publishedDate {
+  margin-right: 1em;
+}
+
+.posts-list .metadata .tags {
+  margin-top: 1em;
+}
+
+.posts-list .tags .tag {
+  color: rgba(0,0,0,0.67);
+  padding: 0.3em 0.5em;
+  margin: 0;
+  font-size: 80%;
+  border: 1px solid rgba(0,0,0,0.4);
+  border-radius: 3px;
+  text-transform: uppercase;
+  font-weight: 500;
+}
+
+.posts-list img {
+  opacity: 1;
+}
+
+.posts-list img[data-src] {
+  opacity: 0;
+}
+
+.posts-more {
+  clear: both;
+}
+
+
+.posts-sidebar {
+  font-size: 16px;
+}
+
+.posts-sidebar h3 {
+  font-size: 16px;
+  margin-top: 0;
+  margin-bottom: 0.5em;
+  font-weight: 400;
+  text-transform: uppercase;
+}
+
+.sidebar-section {
+  margin-bottom: 30px;
+}
+
+.categories ul {
+  list-style-type: none;
+  margin: 0;
+  padding: 0;
+}
+
+.categories li {
+  color: rgba(0, 0, 0, 0.8);
+  margin-bottom: 0;
+}
+
+.categories li>a {
+  border-bottom: none;
+}
+
+.categories li>a:hover {
+  border-bottom: 1px solid rgba(0, 0, 0, 0.4);
+}
+
+.categories .active {
+  font-weight: 600;
+}
+
+.categories .category-count {
+  color: rgba(0, 0, 0, 0.4);
+}
+
+
+@media(min-width: 768px) {
+  .posts-list .post-preview h2 {
+    font-size: 26px;
+  }
+  .posts-list .post-preview .thumbnail {
+    float: right;
+    width: 35%;
+    margin-bottom: 0;
+  }
+  .posts-list .post-preview .description {
+    float: left;
+    width: 45%;
+  }
+  .posts-list .post-preview .metadata {
+    float: left;
+    width: 15%;
+    margin-top: 8px;
+  }
+  .posts-list .post-preview p {
+    margin: 0 0 12px 0;
+    line-height: 1.5em;
+    font-size: 16px;
+  }
+  .posts-with-sidebar .posts-list {
+    float: left;
+    width: 72%;
+  }
+  .posts-with-sidebar .posts-sidebar {
+    float: right;
+    width: 20%;
+    margin-top: 60px;
+    padding-top: 24px;
+    padding-bottom: 24px;
+  }
+}
+
+.downlevel .posts-list .post-preview {
+  color: inherit;
+}
+
+</style>
+
+<script type="application/javascript">
+
+function init_posts_list() {
+
+  function load_image(img) {
+    var src = $(img).attr('data-src');
+    if (src) {
+      $(img).attr('src', src);
+      $(img).load(function() {
+        img.removeAttribute('data-src');
+      });
+    }
+  }
+
+  function set_posts_visible(posts, visible) {
+    if (visible) {
+
+      // show bottom border by default
+      $(posts).removeClass('post-preview-last');
+
+      // apply limits if need be
+      var max_posts = 25;
+      var apply_limits = $('.posts-container').hasClass('posts-apply-limit');
+      if (apply_limits && posts.length > max_posts) {
+        posts = $(posts).slice(0, max_posts);
+      } else {
+        $('.posts-more a').addClass('hidden');
+      }
+
+      // apply last style
+      $(posts.slice(-1)[0]).addClass('post-preview-last');
+
+      $(posts).removeClass('hidden');
+      $(posts).find('img[data-src]').each(function(i, img) {
+        load_image(img);
+      });
+    } else {
+      $(posts).addClass('hidden');
+    }
+  }
+
+  function apply_hash_filter() {
+
+    // clear active state
+    $('.categories .active').removeClass('active');
+
+    // mark all posts invisible to start
+    set_posts_visible($('.posts-list').children('a'), false);
+
+    // if we have a hash filter
+    if (window.location.hash) {
+
+      // mark posts that match the category visible
+      var page_category = window.location.hash.replace("#", "");
+      var posts = $('.post-metadata').map(function(idx, script) {
+        var metadata = $.parseJSON($(script).html());
+        var post = null;
+        $.each(metadata.categories, function(idx, category) {
+          category = category.replace(/ /g,"_");
+          if (category == page_category) {
+            post = $(script).parent().get();
+            return false;
+          }
+        });
+        return post;
+      });
+      set_posts_visible(posts, true);
+
+      // mark the hash active
+      $('.categories li>a[href="' + window.location.hash + '"]').addClass('active');
+
+    } else {
+
+      // no hash filter, make all posts visible (subject to max display)
+      set_posts_visible($('.posts-list').children(), true);
+
+    }
+  }
+
+  // more articles
+  function apply_post_limits(apply) {
+    if (apply) {
+      $('.posts-container').addClass('posts-apply-limit');
+      $('.posts-more a').removeClass('hidden');
+    } else {
+      $('.posts-container').removeClass('posts-apply-limit');
+      $('.posts-more a').addClass('hidden');
+    }
+  }
+
+  // hash filter handling
+  apply_hash_filter();
+  $(window).on('hashchange',function() {
+    apply_post_limits(true);
+    apply_hash_filter();
+  });
+
+  // more articles link
+  $('.posts-more a').click(function(e) {
+    e.preventDefault();
+    apply_post_limits(false);
+    apply_hash_filter();
+    return false;
+  });
+
+}
+
+</script>
+
+
+
+<div class="posts-container posts-apply-limit l-page">
+<div class="posts-list">
+<h1 class="posts-list-caption">My Blog</h1>
+<a href="posts/welcome/" class="post-preview">
+<script class="post-metadata" type="text/json">{"categories":[]}</script>
+<div class="metadata">
+<div class="publishedDate">June 8, 2020</div>
+</div>
+<div class="thumbnail">
+<img/>
+</div>
+<div class="description">
+<h2>Welcome to our Machine Learning Blog!</h2>
+<p>To learn about what we did and a description of the data see the About Page, to view individual models view the different pages in the navigation bar.</p>
+</div>
+</a>
+</div>
+<div class="posts-more">
+<a href="#">More articles &raquo;</a>
+</div>
+</div>
+<!--/radix_placeholder_article_listing-->
 
 <div class="d-title">
-<h1>Overview of Dataset</h1>
-<p>Additional information regarding the data set can be found on Kaggle or in the data folder in our GitHub Repo.</p>
+<h1>My Blog</h1>
+
 </div>
 
 
 <div class="d-article">
-<p>Our final machine learning project was to use all the skills we have learned this term to make the best predictive model of students’ test scores (math and reading) for children in grades 3-8. We specifically used data from Oregon schools and included longitude and latitude to be able to control for geographic location (rural vs urban schools). We added data from the National Center for Educational Statistics about the number of students who receive free or reduced lunch for every school in Oregon. We then calculated for the number of students and proportion of students receiving free or reduced lunch across each grade per school district.</p>
-<p>Our data set contains 47 variables: 11 continuous variables and 36 categorical variables. Means and standard deviation for continuous variables are displayed below. A list and description of all variables can be found on <a href="https://www.kaggle.com/c/edld-654-spring-2020/data">Kaggle</a> or in the data folder in our <a href="https://github.com/karlenaochoa/Machine-Learning-Blog-Post">GitHub</a> Repo. Some of the categorical variables include gender, ethnicity, grade in school, whether a child participated in a Talented and gifted (TAG) program or Special Ed program.</p>
-<p>Although initially we had hoped to use mean imputation for missing data it caused our models not to run so we ended up using median imputation to provided estimates for missing data. To see if our models could produce adequate out-of-sample predictive accuracy, we split our raw data into a training set (75%) and a test set (25%). All feature engineering for data and models was conducted on the training set, and the test set remained untouched until the model was finalized for the training data set. To test the accuracy of our model, we used Root Mean Square Error (RMSE) to examine performance.</p>
-<p>Table 1.</p>
-<div class="layout-chunk" data-layout="l-body">
-<style>html {
-  font-family: -apple-system, BlinkMacSystemFont, 'Segoe UI', Roboto, Oxygen, Ubuntu, Cantarell, 'Helvetica Neue', 'Fira Sans', 'Droid Sans', Arial, sans-serif;
-}
 
-#wwhkyrlkce .gt_table {
-  display: table;
-  border-collapse: collapse;
-  margin-left: auto;
-  margin-right: auto;
-  color: #333333;
-  font-size: 16px;
-  background-color: #FFFFFF;
-  width: auto;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #A8A8A8;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #A8A8A8;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-}
-
-#wwhkyrlkce .gt_heading {
-  background-color: #FFFFFF;
-  text-align: center;
-  border-bottom-color: #FFFFFF;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#wwhkyrlkce .gt_title {
-  color: #333333;
-  font-size: 125%;
-  font-weight: initial;
-  padding-top: 4px;
-  padding-bottom: 4px;
-  border-bottom-color: #FFFFFF;
-  border-bottom-width: 0;
-}
-
-#wwhkyrlkce .gt_subtitle {
-  color: #333333;
-  font-size: 85%;
-  font-weight: initial;
-  padding-top: 0;
-  padding-bottom: 4px;
-  border-top-color: #FFFFFF;
-  border-top-width: 0;
-}
-
-#wwhkyrlkce .gt_bottom_border {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#wwhkyrlkce .gt_col_headings {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-}
-
-#wwhkyrlkce .gt_col_heading {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 6px;
-  padding-left: 5px;
-  padding-right: 5px;
-  overflow-x: hidden;
-}
-
-#wwhkyrlkce .gt_column_spanner_outer {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: normal;
-  text-transform: inherit;
-  padding-top: 0;
-  padding-bottom: 0;
-  padding-left: 4px;
-  padding-right: 4px;
-}
-
-#wwhkyrlkce .gt_column_spanner_outer:first-child {
-  padding-left: 0;
-}
-
-#wwhkyrlkce .gt_column_spanner_outer:last-child {
-  padding-right: 0;
-}
-
-#wwhkyrlkce .gt_column_spanner {
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: bottom;
-  padding-top: 5px;
-  padding-bottom: 6px;
-  overflow-x: hidden;
-  display: inline-block;
-  width: 100%;
-}
-
-#wwhkyrlkce .gt_group_heading {
-  padding: 8px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-}
-
-#wwhkyrlkce .gt_empty_group_heading {
-  padding: 0.5px;
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  vertical-align: middle;
-}
-
-#wwhkyrlkce .gt_striped {
-  background-color: rgba(128, 128, 128, 0.05);
-}
-
-#wwhkyrlkce .gt_from_md > :first-child {
-  margin-top: 0;
-}
-
-#wwhkyrlkce .gt_from_md > :last-child {
-  margin-bottom: 0;
-}
-
-#wwhkyrlkce .gt_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  margin: 10px;
-  border-top-style: solid;
-  border-top-width: 1px;
-  border-top-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 1px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 1px;
-  border-right-color: #D3D3D3;
-  vertical-align: middle;
-  overflow-x: hidden;
-}
-
-#wwhkyrlkce .gt_stub {
-  color: #333333;
-  background-color: #FFFFFF;
-  font-size: 100%;
-  font-weight: initial;
-  text-transform: inherit;
-  border-right-style: solid;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-  padding-left: 12px;
-}
-
-#wwhkyrlkce .gt_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#wwhkyrlkce .gt_first_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-}
-
-#wwhkyrlkce .gt_grand_summary_row {
-  color: #333333;
-  background-color: #FFFFFF;
-  text-transform: inherit;
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-}
-
-#wwhkyrlkce .gt_first_grand_summary_row {
-  padding-top: 8px;
-  padding-bottom: 8px;
-  padding-left: 5px;
-  padding-right: 5px;
-  border-top-style: double;
-  border-top-width: 6px;
-  border-top-color: #D3D3D3;
-}
-
-#wwhkyrlkce .gt_table_body {
-  border-top-style: solid;
-  border-top-width: 2px;
-  border-top-color: #D3D3D3;
-  border-bottom-style: solid;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-}
-
-#wwhkyrlkce .gt_footnotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#wwhkyrlkce .gt_footnote {
-  margin: 0px;
-  font-size: 90%;
-  padding: 4px;
-}
-
-#wwhkyrlkce .gt_sourcenotes {
-  color: #333333;
-  background-color: #FFFFFF;
-  border-bottom-style: none;
-  border-bottom-width: 2px;
-  border-bottom-color: #D3D3D3;
-  border-left-style: none;
-  border-left-width: 2px;
-  border-left-color: #D3D3D3;
-  border-right-style: none;
-  border-right-width: 2px;
-  border-right-color: #D3D3D3;
-}
-
-#wwhkyrlkce .gt_sourcenote {
-  font-size: 90%;
-  padding: 4px;
-}
-
-#wwhkyrlkce .gt_left {
-  text-align: left;
-}
-
-#wwhkyrlkce .gt_center {
-  text-align: center;
-}
-
-#wwhkyrlkce .gt_right {
-  text-align: right;
-  font-variant-numeric: tabular-nums;
-}
-
-#wwhkyrlkce .gt_font_normal {
-  font-weight: normal;
-}
-
-#wwhkyrlkce .gt_font_bold {
-  font-weight: bold;
-}
-
-#wwhkyrlkce .gt_font_italic {
-  font-style: italic;
-}
-
-#wwhkyrlkce .gt_super {
-  font-size: 65%;
-}
-
-#wwhkyrlkce .gt_footnote_marks {
-  font-style: italic;
-  font-size: 65%;
-}
-</style>
-<div id="wwhkyrlkce" style="overflow-x:auto;overflow-y:auto;width:auto;height:auto;"><table class="gt_table">
-  
-  <thead class="gt_col_headings">
-    <tr>
-      <th class="gt_col_heading gt_columns_bottom_border gt_left" rowspan="1" colspan="1">skim_variable</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">numeric.mean</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">numeric.sd</th>
-      <th class="gt_col_heading gt_columns_bottom_border gt_right" rowspan="1" colspan="1">n_missing</th>
-    </tr>
-  </thead>
-  <tbody class="gt_table_body">
-    <tr>
-      <td class="gt_row gt_left">enrl_grd</td>
-      <td class="gt_row gt_right">5.429</td>
-      <td class="gt_row gt_right">1.711</td>
-      <td class="gt_row gt_right">0</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left">score</td>
-      <td class="gt_row gt_right">2496.057</td>
-      <td class="gt_row gt_right">117.482</td>
-      <td class="gt_row gt_right">0</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left">lat</td>
-      <td class="gt_row gt_right">44.769</td>
-      <td class="gt_row gt_right">0.992</td>
-      <td class="gt_row gt_right">25</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left">lon</td>
-      <td class="gt_row gt_right">-122.480</td>
-      <td class="gt_row gt_right">1.281</td>
-      <td class="gt_row gt_right">25</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left">p_american_indian_alaska_native</td>
-      <td class="gt_row gt_right">0.012</td>
-      <td class="gt_row gt_right">0.047</td>
-      <td class="gt_row gt_right">2</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left">p_asian</td>
-      <td class="gt_row gt_right">0.039</td>
-      <td class="gt_row gt_right">0.071</td>
-      <td class="gt_row gt_right">2</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left">p_native_hawaiian_pacific_islander</td>
-      <td class="gt_row gt_right">0.008</td>
-      <td class="gt_row gt_right">0.012</td>
-      <td class="gt_row gt_right">2</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left">p_black_african_american</td>
-      <td class="gt_row gt_right">0.020</td>
-      <td class="gt_row gt_right">0.037</td>
-      <td class="gt_row gt_right">2</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left">p_hispanic_latino</td>
-      <td class="gt_row gt_right">0.249</td>
-      <td class="gt_row gt_right">0.190</td>
-      <td class="gt_row gt_right">2</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left">p_white</td>
-      <td class="gt_row gt_right">0.604</td>
-      <td class="gt_row gt_right">0.201</td>
-      <td class="gt_row gt_right">2</td>
-    </tr>
-    <tr>
-      <td class="gt_row gt_left">p_multiracial</td>
-      <td class="gt_row gt_right">0.066</td>
-      <td class="gt_row gt_right">0.033</td>
-      <td class="gt_row gt_right">2</td>
-    </tr>
-  </tbody>
-  
-  
-</table></div>
-</div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
