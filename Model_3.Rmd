@@ -1,7 +1,7 @@
 ---
 title: "About Model 3"
 description: |
-  Some additional details about the blog
+  Our final fit using boosted trees
 ---
 
 ```{r setup, include=FALSE}
@@ -19,7 +19,7 @@ library(here)
 library(utils)
 ```
 
-# What is boosted trees and why are using it?
+# Some background on boosted trees:
 
 For our third model, we decided to conduct a boosted trees regression model. This builds upon basic decision trees, which recursively split data into binary and homogeneous subgroups until reaching an optimum point in which the nodes cannot be split further. Each subgroup is split into what the algorithm thinks is the “best,” based on running all other possible splits on all variables. 
 
@@ -30,13 +30,13 @@ An important aspect of boosted trees is gradient descent, which is an optimizati
 # Important hyperparameters to tune:
 
 * **Learning rate** : the size of step we take at each model iteration as we descend to the best minimum value during gradient descent. 
-  + Typically ranges from .001 to .3, but can range from 0 to 1. 
-  + Smaller values help avoid overfitting and have a greater chance of achieving “optimal” accuracy, but are more computationally intensive.
+   + Typically ranges from .001 to .3, but can range from 0 to 1. 
+   + Smaller values help avoid overfitting and have a greater chance of achieving “optimal” accuracy, but are more computationally intensive.
 * **Tree depth** : how many splits we conduct, this is typically low in boosted trees, which helps reduce overfitting.
 * **Number of trees** : the number of trees we fit. Too few leads to ting, whuile too many leads to overfitting.
 * **Minimum n for a terminal node** : the number of splits before reaching an end node of the tree.
 
-You can also tune **loss reduction**, which specifies minimum loss required for further trees based on each prior trees complexity, and **randomization**.
+You can also tune **loss reduction**, which specifies minimum loss required for further trees based on each prior tree's complexity, and **randomization**.
 
 # Overview of the steps in our boosted tree:
 
@@ -45,12 +45,12 @@ You can also tune **loss reduction**, which specifies minimum loss required for 
 3. Select the best learning rate, then tune tree depth and minimum n at that rate.
 4. Select optimum tree depth and minimum n, then tune loss reduction.
 5. Tune model for randomness using mtry and sample size. 
-  + As loss reduction had no impact on the model, we do not use output from that model.
+   + As loss reduction had no impact on the model, we do not use output from that model.
 6. Select the best model based on randomness and develop predictions for our test data.
 
 # Lets look at the code!
 
-## Splitting the data
+### Splitting the data
 
 First, we split the training data of the overall dataset into training and testing sets and set-up cross validation. Not shown below is that we are using only 5% of the training data, as it took too long for our model to run otherwise. This can be done by adding "sample_frac(.05)" when reading the data in (even with 5%, all these models took 7.5 hours to run!).
 
@@ -60,7 +60,7 @@ train <- training(splt)
 cv <- vfold_cv(train)
 ```
 
-## Writing the recipe
+### Writing the recipe
 
 Second, we write our recipe. This is the same as previous recipes used in prior models, where we clean the data appropriately using median imputation, dummy coding variables, and taking care of median imputation.
 
@@ -76,7 +76,7 @@ rec <- recipe(score ~ ., train) %>%
   step_nzv(all_predictors())
 ```
 
-## Setting up the model
+### Setting up the model
 
 Third, we set-up our model. For boosted trees, we are using the "xgboost" engine. We use "set_mode" to tell our model that we are running a regression. If we were doing a classification model, we would tell the model that here.
 
@@ -87,7 +87,7 @@ mod <- boost_tree() %>%
 
 ```
 
-## Adding recipe and model to a workflow
+### Adding recipe and model to a workflow
 
 We then add our model to a workflow. This will be helpful as we change our model by tuning different hyperparameters throughout the model fitting process, as we can simply update this workflow with that information as opposed to starting from scratch with new recipes, models, etc.
 
@@ -97,7 +97,7 @@ wf_df <- workflow() %>%
   add_model(mod)
 ```
 
-## Tuning the learning rate between the optimum values of .005 to .3.
+### Tuning the learning rate between the optimum values of .005 to .3.
 
 In this model, we set our number of trees at 6000, stop iterations at 20, and validation at 0.2. We picked a large number of trees because boosted trees are shallow models, so, to get a better fit, they need a larger number trees. 
 
@@ -165,7 +165,7 @@ ggplot(to_plot, aes(learn_rate, mean)) +
 knitr::include_graphics("learn rate plot-1.png")
 ```
 
-## Tuning again using a lower learning rate range
+### Tuning again using a lower learning rate range
 
 The code below is very similar to the last model, with the only difference being that we lowered our range in expand.grid for learning rate to vary between 0.0001 to 0.1.
 
@@ -198,7 +198,7 @@ show_best(tune_tree_lr2, "rmse")
 knitr::include_graphics("second learn rate output.png")
 ```
 
-## Tuning tree depth and minimum n
+### Tuning tree depth and minimum n
 
 In the code below, you can see that told our model to use the learning rate that lead to the best RSME in our first model using this code: 
 
@@ -232,7 +232,7 @@ show_best(tune_tree_depth, "rmse")
 
 DID NOT TAKE SCREENSHOT OF THIS OUTPUT :(
 
-## Tuning loss reduction
+### Tuning loss reduction
 
 We then decided to tune loss reduction by again setting that parameter to tune within the the set_args() function of the model and defined the range in expand.grid to be from 0 to 100 with intervals of 5. We took the best parameters from the last model and manually set tree_depth to 1.
 
@@ -267,7 +267,7 @@ show_best(tune_tree_reg, "rmse")
 knitr::include_graphics("loss reduction output.png")
 ```
 
-## Tuning randomness using mtry and sample_size
+### Tuning randomness using mtry and sample_size
 
 We selected the best parameters from when we tuned tree depth and minimum n, then tuned randomness by setting mtry and sample_size to tune() and using grid_max_entropy to define this tuning. By using finalize with mtry, mtry will automatically look at all our predictors because we are finalizing it with our recipe and data. We then tell sample_size that we only want it to look at proportion.
 
@@ -332,7 +332,7 @@ ggplot(to_plot_rand, aes(tuning_val, mean)) +
 knitr::include_graphics("randomness plot 2.png")
 ```
 
-## Lets predict the test set
+### Lets predict the test set
 
 Now that we have a model we like and seems to be the lowest we are going to get after tuning the most important parameters of a boosted tree model, we are going to set it up to get predictions for the test set. To do this, we select our best model based on RSME from the randomness tuning model, then we finalize our model and recipe. We then apply our final recipe to the whole training set using prep() and bake(), before doing the same with our true test dataset. We have to read in the final testing dataset here because it was housed on Kaggle in a separte dataset to our training data.
 

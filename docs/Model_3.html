@@ -21,27 +21,27 @@
   <!--radix_placeholder_meta_tags-->
   <title>Machine Learning Blog: About Model 3</title>
   
-  <meta property="description" itemprop="description" content="Some additional details about the blog"/>
+  <meta property="description" itemprop="description" content="Our final fit using boosted trees"/>
   
   
   
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
   <meta property="og:title" content="Machine Learning Blog: About Model 3"/>
   <meta property="og:type" content="article"/>
-  <meta property="og:description" content="Some additional details about the blog"/>
+  <meta property="og:description" content="Our final fit using boosted trees"/>
   <meta property="og:locale" content="en_US"/>
   <meta property="og:site_name" content="Machine Learning Blog"/>
   
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
   <meta property="twitter:title" content="Machine Learning Blog: About Model 3"/>
-  <meta property="twitter:description" content="Some additional details about the blog"/>
+  <meta property="twitter:description" content="Our final fit using boosted trees"/>
   
   <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description"]}},"value":[{"type":"character","attributes":{},"value":["About Model 3"]},{"type":"character","attributes":{},"value":["Some additional details about the blog"]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description"]}},"value":[{"type":"character","attributes":{},"value":["About Model 3"]},{"type":"character","attributes":{},"value":["Our final fit using boosted trees"]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   <!--radix_placeholder_navigation_in_header-->
@@ -1282,7 +1282,7 @@
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"About Model 3","description":"Some additional details about the blog","authors":[]}
+{"title":"About Model 3","description":"Our final fit using boosted trees","authors":[]}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -1308,12 +1308,323 @@
 
 <div class="d-title">
 <h1>About Model 3</h1>
-<p>Some additional details about the blog</p>
+<p><p>Our final fit using boosted trees</p></p>
 </div>
 
 
 <div class="d-article">
+<h1 id="some-background-on-boosted-trees">Some background on boosted trees:</h1>
+<p>For our third model, we decided to conduct a boosted trees regression model. This builds upon basic decision trees, which recursively split data into binary and homogeneous subgroups until reaching an optimum point in which the nodes cannot be split further. Each subgroup is split into what the algorithm thinks is the “best,” based on running all other possible splits on all variables.</p>
+<p>To improve upon decision trees, ensemble methods aggregate across multiple decision trees in order to develop better models and predictions. Boosted trees (the ensemble method we are using) work by fitting multiple decision trees sequentially to the residuals of the previous model until reaching a stopping rule that ends the sequential model fitting. Although boosted trees mostly consist of “stumps,” or short trees with little data in each individual model, their ensemble output typically achieves high “out-of-the-box” performance, which is why we chose it for our final fit.</p>
+<p>An important aspect of boosted trees is gradient descent, which is an optimization algorithm that compares predictions against a cost function to determine how steep the sequential models descend to reach the designated stopping point. For us, this stopping point will be the minimum value of RSME. The steepness of the descent is determined by the learning rate, or the size of steps we take at each model iteration.</p>
+<h1 id="important-hyperparameters-to-tune">Important hyperparameters to tune:</h1>
+<ul>
+<li><strong>Learning rate</strong> : the size of step we take at each model iteration as we descend to the best minimum value during gradient descent.
+<ul>
+<li>Typically ranges from .001 to .3, but can range from 0 to 1.</li>
+<li>Smaller values help avoid overfitting and have a greater chance of achieving “optimal” accuracy, but are more computationally intensive.</li>
+</ul></li>
+<li><strong>Tree depth</strong> : how many splits we conduct, this is typically low in boosted trees, which helps reduce overfitting.</li>
+<li><strong>Number of trees</strong> : the number of trees we fit. Too few leads to ting, whuile too many leads to overfitting.</li>
+<li><strong>Minimum n for a terminal node</strong> : the number of splits before reaching an end node of the tree.</li>
+</ul>
+<p>You can also tune <strong>loss reduction</strong>, which specifies minimum loss required for further trees based on each prior tree’s complexity, and <strong>randomization</strong>.</p>
+<h1 id="overview-of-the-steps-in-our-boosted-tree">Overview of the steps in our boosted tree:</h1>
+<ol type="1">
+<li>Tune the learning rate between the optimum values of .005 to .3.</li>
+<li>Tune again using a lower learning rate range, since our optimum value from the first model was relatively small.</li>
+<li>Select the best learning rate, then tune tree depth and minimum n at that rate.</li>
+<li>Select optimum tree depth and minimum n, then tune loss reduction.</li>
+<li>Tune model for randomness using mtry and sample size.
+<ul>
+<li>As loss reduction had no impact on the model, we do not use output from that model.</li>
+</ul></li>
+<li>Select the best model based on randomness and develop predictions for our test data.</li>
+</ol>
+<h1 id="lets-look-at-the-code">Lets look at the code!</h1>
+<h3 id="splitting-the-data">Splitting the data</h3>
+<p>First, we split the training data of the overall dataset into training and testing sets and set-up cross validation. Not shown below is that we are using only 5% of the training data, as it took too long for our model to run otherwise. This can be done by adding “sample_frac(.05)” when reading the data in (even with 5%, all these models took 7.5 hours to run!).</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+splt &lt;- initial_split(data)
+train &lt;- training(splt)
+cv &lt;- vfold_cv(train)</code></pre>
+</div>
+<h3 id="writing-the-recipe">Writing the recipe</h3>
+<p>Second, we write our recipe. This is the same as previous recipes used in prior models, where we clean the data appropriately using median imputation, dummy coding variables, and taking care of median imputation.</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+rec &lt;- recipe(score ~ ., train) %&gt;% 
+  step_mutate(tst_dt = as.numeric(lubridate::mdy_hms(tst_dt))) %&gt;% 
+  update_role(contains(&quot;id&quot;), ncessch, new_role = &quot;id vars&quot;) %&gt;% 
+  step_nzv(all_predictors(), freq_cut = 0, unique_cut = 0) %&gt;% 
+  step_novel(all_nominal()) %&gt;% 
+  step_unknown(all_nominal()) %&gt;% 
+  step_medianimpute(all_numeric(), -all_outcomes(), -has_role(&quot;id vars&quot;))  %&gt;% 
+  step_dummy(all_nominal(), -has_role(&quot;id vars&quot;)) %&gt;% 
+  step_nzv(all_predictors())</code></pre>
+</div>
+<h3 id="setting-up-the-model">Setting up the model</h3>
+<p>Third, we set-up our model. For boosted trees, we are using the “xgboost” engine. We use “set_mode” to tell our model that we are running a regression. If we were doing a classification model, we would tell the model that here.</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+mod &lt;- boost_tree() %&gt;% 
+  set_engine(&quot;xgboost&quot;, nthreads = parallel::detectCores()) %&gt;% 
+  set_mode(&quot;regression&quot;) </code></pre>
+</div>
+<h3 id="adding-recipe-and-model-to-a-workflow">Adding recipe and model to a workflow</h3>
+<p>We then add our model to a workflow. This will be helpful as we change our model by tuning different hyperparameters throughout the model fitting process, as we can simply update this workflow with that information as opposed to starting from scratch with new recipes, models, etc.</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+wf_df &lt;- workflow() %&gt;% 
+  add_recipe(rec) %&gt;% 
+  add_model(mod)</code></pre>
+</div>
+<h3 id="tuning-the-learning-rate-between-the-optimum-values-of-.005-to-.3.">Tuning the learning rate between the optimum values of .005 to .3.</h3>
+<p>In this model, we set our number of trees at 6000, stop iterations at 20, and validation at 0.2. We picked a large number of trees because boosted trees are shallow models, so, to get a better fit, they need a larger number trees.</p>
+<p>We started tuning between .005 to .3 because smaller learning rates are seen as better and this range is a default starting point. You can see that we established tuning by telling our model that “learn_rate” is set to “tune()” and then providing the tuning range through “expand.grid.”</p>
+<p>We then run this first model! You can see how long the model takes by adding “tic()” and “toc()” around the model.</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+tune_lr &lt;- mod %&gt;% 
+  set_args(trees = 6000,
+           learn_rate = tune(),
+           stop_iter = 20,
+           validation = 0.2)
 
+wf_tune_lr &lt;- wf_df %&gt;% 
+  update_model(tune_lr)
+
+grd &lt;- expand.grid(learn_rate = seq(0.005, 0.3, length.out = 15))
+
+tic()
+tune_tree_lr &lt;- tune_grid(wf_tune_lr, cv, grid = grd, control = tune::control_resamples(verbose = TRUE, save_pred = TRUE))
+toc()</code></pre>
+</div>
+<p>Then we looked at the output and found the best value from the model. We assessed “best” by looking for the lowest RSME score. You can see the lowest RSME this model produced is 91.5 at a learning rate of 0.005.</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+collect_metrics(tune_tree_lr)
+
+show_best(tune_tree_lr, &quot;rmse&quot;)</code></pre>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="loss%20reduction%20output.png" width="100%" /></p>
+</div>
+<p>We decided to plot this output to see if we need to tune learning rate again. After looking at the plot, we decided to try an even smaller learning rate, as our best value was at the bottom of the range we used.</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+to_plot &lt;- tune_tree_lr %&gt;% 
+  unnest(.metrics) %&gt;% 
+  group_by(.metric, learn_rate) %&gt;% 
+  summarize(mean = mean(.estimate, na.rm = TRUE)) %&gt;% 
+  filter(learn_rate != 0.0001) 
+
+highlight &lt;- to_plot %&gt;% 
+  filter(.metric == &quot;rmse&quot; &amp; mean == min(mean)) %&gt;%
+  ungroup() %&gt;% 
+  select(learn_rate) %&gt;% 
+  semi_join(to_plot, .)
+
+ggplot(to_plot, aes(learn_rate, mean)) +
+  geom_point() +
+  geom_point(color = &quot;#de4f69&quot;, data = highlight) +
+  facet_wrap(~.metric, scales = &quot;free_y&quot;) +
+  theme_minimal() +
+  labs(title = &quot;RSME and RSQ after tuning learning rate&quot;,
+       subtitle = &quot;Best learning rate indicated by red point&quot;,
+       x = &quot;Learn rate&quot;,
+       y = &quot;Mean&quot;)</code></pre>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="learn%20rate%20plot-1.png" width="100%" /></p>
+</div>
+<h3 id="tuning-again-using-a-lower-learning-rate-range">Tuning again using a lower learning rate range</h3>
+<p>The code below is very similar to the last model, with the only difference being that we lowered our range in expand.grid for learning rate to vary between 0.0001 to 0.1.</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+tune_lr2 &lt;- mod %&gt;% 
+  set_args(trees = 6000,
+           learn_rate = tune(),
+           stop_iter = 20,
+           validation = 0.2)
+
+wf_tune_lr &lt;- wf_df %&gt;% 
+  update_model(tune_lr2)
+
+grd &lt;- expand.grid(learn_rate = seq(0.0001, 0.1, length.out = 15))
+
+tic()
+tune_tree_lr2 &lt;- tune_grid(wf_tune_lr, cv, grid = grd, control = tune::control_resamples(verbose = TRUE, save_pred = TRUE))
+toc()</code></pre>
+</div>
+<p>The results below demonstrate that this did not result in a better RSME score, with the lowest RSME being 93.0 at a learning rate of .00724. Therefore, we decided to build the model using the learning rate that lead to the lowest RSME score in the previous fit and tuning grid.</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+collect_metrics(tune_tree_lr2)
+
+show_best(tune_tree_lr2, &quot;rmse&quot;)</code></pre>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="second%20learn%20rate%20output.png" width="100%" /></p>
+</div>
+<h3 id="tuning-tree-depth-and-minimum-n">Tuning tree depth and minimum n</h3>
+<p>In the code below, you can see that told our model to use the learning rate that lead to the best RSME in our first model using this code:</p>
+<p>finalize_model(select_best(tune_tree_lr, “rmse”))</p>
+<p>We then set “tree_depth” and “min_n” to tune and updated our workflow. To tune both values, we used default ranges in tree_depth and min_n, but told “grid_max_entropy” to pick 30 of those values per fold.</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+tune_depth &lt;- tune_lr %&gt;% 
+  finalize_model(select_best(tune_tree_lr, &quot;rmse&quot;)) %&gt;% 
+  set_args(tree_depth = tune(),
+           min_n = tune())
+
+wf_tune_depth &lt;- wf_df %&gt;% 
+  update_model(tune_depth)
+
+grd &lt;- grid_max_entropy(tree_depth(), min_n(), size = 30)
+
+tic()
+tune_tree_depth &lt;- tune_grid(wf_tune_depth, cv, grid = grd, control = tune::control_resamples(verbose = TRUE, save_pred = TRUE))
+toc()</code></pre>
+</div>
+<p>In the following results, you can see the best RSME was X at a tree depth of X and minimum n of X.</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+collect_metrics(tune_tree_depth)
+
+show_best(tune_tree_depth, &quot;rmse&quot;)</code></pre>
+</div>
+<p>DID NOT TAKE SCREENSHOT OF THIS OUTPUT :(</p>
+<h3 id="tuning-loss-reduction">Tuning loss reduction</h3>
+<p>We then decided to tune loss reduction by again setting that parameter to tune within the the set_args() function of the model and defined the range in expand.grid to be from 0 to 100 with intervals of 5. We took the best parameters from the last model and manually set tree_depth to 1.</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+tune_loss &lt;- tune_depth %&gt;% 
+  finalize_model(select_best(tune_tree_depth, &quot;rmse&quot;)) %&gt;% 
+  set_args(loss_reduction = tune(),
+           tree_depth = 1)
+
+wf_tune_reg &lt;- wf_df %&gt;% 
+  update_model(tune_loss)
+
+grd &lt;- expand.grid(loss_reduction = seq(0, 100, 5))
+
+tic()
+tune_tree_reg &lt;- tune_grid(wf_tune_reg, cv, grid = grd, control = tune::control_resamples(verbose = TRUE, save_pred = TRUE))
+toc()</code></pre>
+</div>
+<p>As can be seen in the output below, tuning loss reduction had no impact on our model. Thus, we decided to ignore this model and do the next model using the best output from when we tuned tree depth and minimum n.</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+collect_metrics(tune_tree_reg)
+
+show_best(tune_tree_reg, &quot;rmse&quot;)
+
+# no improvement on last model</code></pre>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="loss%20reduction%20output.png" width="100%" /></p>
+</div>
+<h3 id="tuning-randomness-using-mtry-and-sample_size">Tuning randomness using mtry and sample_size</h3>
+<p>We selected the best parameters from when we tuned tree depth and minimum n, then tuned randomness by setting mtry and sample_size to tune() and using grid_max_entropy to define this tuning. By using finalize with mtry, mtry will automatically look at all our predictors because we are finalizing it with our recipe and data. We then tell sample_size that we only want it to look at proportion.</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+tune_rand &lt;- tune_loss %&gt;%
+  finalize_model(select_best(tune_tree_reg, &quot;rmse&quot;)) %&gt;% 
+  set_args(mtry = tune(),
+           sample_size = tune())
+
+wf_tune_rand &lt;- wf_df %&gt;% 
+  update_model(tune_rand)
+
+grd &lt;- grid_max_entropy(finalize(mtry(), juice(prep(rec))), 
+                        sample_size = sample_prop(), 
+                        size = 30)
+
+tic()
+tune_tree_rand &lt;- tune_grid(wf_tune_rand, cv, grid = grd,control = tune::control_resamples(verbose = TRUE, save_pred = TRUE))
+toc()</code></pre>
+</div>
+<p>The below code showed that the best model had an RSME of 88.2 at an mtry of 23 and a sample_size of 0.217.</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+collect_metrics(tune_tree_rand)
+
+show_best(tune_tree_rand, &quot;rmse&quot;)</code></pre>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="randomness%20output.png" width="100%" /></p>
+</div>
+<p>You can see the output of this tuning model in the below plot, with the best values plotted in red.</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+to_plot_rand &lt;- tune_tree_rand %&gt;% 
+  unnest(.metrics) %&gt;% 
+  group_by(.metric, mtry, sample_size) %&gt;% 
+  summarize(mean = mean(.estimate, na.rm = TRUE)) %&gt;% 
+  filter(.metric == &quot;rmse&quot;) %&gt;%
+  ungroup() %&gt;% 
+  pivot_longer(cols = c(mtry, sample_size), 
+               names_to = &quot;tuning_param&quot;, 
+               values_to = &quot;tuning_val&quot;)
+
+highlight_rand &lt;- to_plot_rand %&gt;% 
+  filter(mean == min(mean))
+  
+ggplot(to_plot_rand, aes(tuning_val, mean)) +
+  geom_point() +
+  geom_point(color = &quot;#de4f69&quot;, data = highlight_rand) +
+  facet_wrap(~tuning_param) +
+  labs(title = &quot;Mean RSME after tuning randomness using mtry and sample size&quot;,
+       subtitle = &quot;Best RMSE identified by red point&quot;,
+       x = &quot;Tuning value&quot;,
+       y = &quot;Mean&quot;) +
+  theme_minimal()</code></pre>
+</div>
+<div class="layout-chunk" data-layout="l-body">
+<p><img src="randomness%20plot%202.png" width="100%" /></p>
+</div>
+<h3 id="lets-predict-the-test-set">Lets predict the test set</h3>
+<p>Now that we have a model we like and seems to be the lowest we are going to get after tuning the most important parameters of a boosted tree model, we are going to set it up to get predictions for the test set. To do this, we select our best model based on RSME from the randomness tuning model, then we finalize our model and recipe. We then apply our final recipe to the whole training set using prep() and bake(), before doing the same with our true test dataset. We have to read in the final testing dataset here because it was housed on Kaggle in a separte dataset to our training data.</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+# Select best tuning parameters
+tune_tree_best &lt;- tune_tree_rand %&gt;%
+  select_best(metric = &quot;rmse&quot;)
+
+# Finalize your model using the best tuning parameters
+tune_tree_final &lt;- tune_rand %&gt;%
+    finalize_model(tune_tree_best)
+
+rec_tree_final &lt;- rec %&gt;% 
+   finalize_recipe(tune_tree_best)
+
+prepped_train &lt;- rec_tree_final  %&gt;% 
+  prep() %&gt;% 
+  bake(train)  %&gt;% 
+  select(-contains(&quot;id&quot;), -ncessch)
+
+real_test &lt;- read_csv(here::here(&quot;data&quot;, &quot;test.csv&quot;), col_types = cols(.default = col_guess(), calc_admn_cd = col_character())) %&gt;% 
+  left_join(frl)
+
+prepped_test &lt;- rec_tree_final  %&gt;% 
+  prep()  %&gt;%  
+  bake(real_test) %&gt;%
+  select(-contains(&quot;id&quot;), -ncessch)</code></pre>
+</div>
+<p>We then run the final fit on our entire training data. The results of this model “full_train_fit” are then included in the function “predict()” to get predictions based on the prepped_test data. We then put these predictions in a dataframe with Id and create a csv to sumbit on kaggle (the desired submssion format for our class competition) to see how our model does predicting the test dataset.</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+full_train_fit &lt;- fit(tune_tree_final, score ~ ., prepped_train)
+
+preds &lt;- predict(full_train_fit, new_data = prepped_test)
+
+pred_file &lt;- tibble(Id = real_test$id, Predicted = preds$.pred) 
+
+write_csv(pred_file, &quot;final_submission.csv&quot;)</code></pre>
+</div>
+<p>We received a score of 88.37, better than our preliminary fit 2!</p>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
