@@ -14,6 +14,9 @@ library(magrittr)
 library(here)
 library(vip)
 library(rsample)
+library(baguette)
+library(recipes)
+library(tune)
 
 
 full_train <- read.csv(here("data","train.csv")) %>%
@@ -70,6 +73,7 @@ We used k-fold cross validation (CV) to split our training data into 10 distinct
 
 
 The first thing we did was create a recipe (the regression equation that is usually defined inside of a lm call) that defined score as our dependent variable with all other variables predicting it. 
+
 We assigned all school and id vars to "id_vars", this ignores them as predictors and does not apply any of the following steps to these variables. Next, we took care of missing data with step_unknown and step_novel and treated missing data with mean imputation. We also fixed the date format and removed predictors that had no variance, and dummy coded nominal variables. 
 
 ```{r}
@@ -87,7 +91,7 @@ rec <- recipe(score ~ ., train) %>%
 rec
 ```
 
-As the "Inputs" displays, we have 6 ID variables, 1, outcome, and 40 predictors. 
+As the "Inputs" displays, we have 6 ID variables, 1 outcome, and 40 predictors. 
 
 ```{r include = FALSE}
 prep(rec)
@@ -109,7 +113,7 @@ m1 <- mod %>%
 m1
 ```
 
-Our initial model without feature engineering  produced a mean rmse of 87.8. 
+Our initial model without feature engineering produced a mean rmse of 87.8. 
 
 ```{r}
 m1 %>%  
@@ -163,7 +167,7 @@ vip_m2 <- vip(lm(score ~ lat:lon + tag_ed_fg + sp_ed_fg + ethnic_cd + econ_dsvnt
 ```
 
 
-To better understand the predictive accuracy of our model, we can use a package called VIP to look at a plot of variable importance on score. We choose to examine variables we thought would be theoretically important for test scores, such as grade in school, ethnicity, whether children participated in a special education program, or talented and gifted program, or qualified for a free or reduced lunch program (economic disadvantage). We also included the  interaction between longitude and latitude since we thought it would improve our model. 
+To better understand the predictive accuracy of our model, we can use a package called VIP to look at a plot of variable importance on score. We choose to examine variables we thought would be theoretically important for test scores, such as grade in school, ethnicity, whether children participated in a special education program or talented and gifted program, or qualified for a free or reduced lunch program (economic disadvantage). We also included the interaction between longitude and latitude since we thought it would improve our model. 
 
 ```{r include = FALSE}
 plot1 <- vip_m2 +
@@ -176,6 +180,6 @@ plot1 <- vip_m2 +
 plot1
 ```
 
-As seen in the plot, latitude and longitude do not seem to be a variable with a lot of importance in our model, and instead grade in school and whether a child participated in a special education program, or talented and gifted program seemed to be the most important variables of the ones examined. The salmon color bars represent negative values, and teal bars represent positive values. 
+As seen in the plot, latitude and longitude do not seem to be a variable with a lot of importance in our model, and instead grade in school and whether a child participated in a special education program or talented and gifted program seemed to be the most important variables of the ones examined. The salmon color bars represent negative values, while teal bars represent positive values. 
 
-This first model allowed us to get acquainted with ML and specifically using recipes. We starting to use some feature engineering to make a more predictive model and will continue to do so in subsequent models. 
+This first model allowed us to get acquainted with ML and specifically using recipes. We started to use some feature engineering to make a more predictive model and will continue to do so in subsequent models. 

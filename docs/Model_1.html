@@ -1316,7 +1316,8 @@
 <p>The purpose of preliminary fit 1 was to use basic feature engineering to make our initial predictions of test scores. We used a linear regression model with all variables in the data set (besides our outcome and ID variables). For this blog, we only sampled 10% of the data for computational efficiency.</p>
 <p>One of the biggest hurdles for learning and using machine learning (ML) is getting the right balance of bias-variance. The purpose of ML is to be able to predict unseen scores or data, so we use available data to model the best prediction. The bias reflects how well the model fits the structure of our data; low bias is good, where high bias ignores important details of our data. Variance reflects variability of our model predictions for a specific data point; flexible models are more likely to have higher variance and are prone to overfitting to the training data and not generalize well to new data. Ideally, our model would have low bias and low variance, but for our first model we will run a linear model which typically has a high bias and low variance.</p>
 <p>We used k-fold cross validation (CV) to split our training data into 10 distinct samples of data. Although k-fold may have more variability than other CV methods, it is the most widely used method. For each fold, 10% of the training data are sampled for assessment, and the remaining of the training data serve as our analysis set for that fold. Our performance measure (RMSE) will be the average RMSE across all 10 folds.</p>
-<p>The first thing we did was create a recipe (the regression equation that is usually defined inside of a lm call) that defined score as our dependent variable with all other variables predicting it. We assigned all school and id vars to “id_vars”, this ignores them as predictors and does not apply any of the following steps to these variables. Next, we took care of missing data with step_unknown and step_novel and treated missing data with mean imputation. We also fixed the date format and removed predictors that had no variance, and dummy coded nominal variables.</p>
+<p>The first thing we did was create a recipe (the regression equation that is usually defined inside of a lm call) that defined score as our dependent variable with all other variables predicting it.</p>
+<p>We assigned all school and id vars to “id_vars”, this ignores them as predictors and does not apply any of the following steps to these variables. Next, we took care of missing data with step_unknown and step_novel and treated missing data with mean imputation. We also fixed the date format and removed predictors that had no variance, and dummy coded nominal variables.</p>
 <div class="layout-chunk" data-layout="l-body">
 <pre class="r"><code>
 rec &lt;- recipe(score ~ ., train) %&gt;% 
@@ -1351,7 +1352,7 @@ Sparse, unbalanced variable filter on all_predictors
 Dummy variables from all_nominal
 Sparse, unbalanced variable filter on all_predictors</code></pre>
 </div>
-<p>As the “Inputs” displays, we have 6 ID variables, 1, outcome, and 40 predictors.</p>
+<p>As the “Inputs” displays, we have 6 ID variables, 1 outcome, and 40 predictors.</p>
 <div class="layout-chunk" data-layout="l-body">
 <pre class="r"><code>
 m1 &lt;- mod %&gt;% 
@@ -1365,13 +1366,13 @@ m1</code></pre>
 # A tibble: 10 x 4
    splits               id     .metrics         .notes          
    &lt;named list&gt;         &lt;chr&gt;  &lt;list&gt;           &lt;list&gt;          
- 1 &lt;split [12.8K/1.4K]&gt; Fold01 &lt;tibble [2 x 3]&gt; &lt;tibble [0 x 1]&gt;
- 2 &lt;split [12.8K/1.4K]&gt; Fold02 &lt;tibble [2 x 3]&gt; &lt;tibble [0 x 1]&gt;
- 3 &lt;split [12.8K/1.4K]&gt; Fold03 &lt;tibble [2 x 3]&gt; &lt;tibble [0 x 1]&gt;
+ 1 &lt;split [12.8K/1.4K]&gt; Fold01 &lt;tibble [2 x 3]&gt; &lt;tibble [1 x 1]&gt;
+ 2 &lt;split [12.8K/1.4K]&gt; Fold02 &lt;tibble [2 x 3]&gt; &lt;tibble [1 x 1]&gt;
+ 3 &lt;split [12.8K/1.4K]&gt; Fold03 &lt;tibble [2 x 3]&gt; &lt;tibble [1 x 1]&gt;
  4 &lt;split [12.8K/1.4K]&gt; Fold04 &lt;tibble [2 x 3]&gt; &lt;tibble [0 x 1]&gt;
  5 &lt;split [12.8K/1.4K]&gt; Fold05 &lt;tibble [2 x 3]&gt; &lt;tibble [0 x 1]&gt;
- 6 &lt;split [12.8K/1.4K]&gt; Fold06 &lt;tibble [2 x 3]&gt; &lt;tibble [1 x 1]&gt;
- 7 &lt;split [12.8K/1.4K]&gt; Fold07 &lt;tibble [2 x 3]&gt; &lt;tibble [0 x 1]&gt;
+ 6 &lt;split [12.8K/1.4K]&gt; Fold06 &lt;tibble [2 x 3]&gt; &lt;tibble [0 x 1]&gt;
+ 7 &lt;split [12.8K/1.4K]&gt; Fold07 &lt;tibble [2 x 3]&gt; &lt;tibble [1 x 1]&gt;
  8 &lt;split [12.8K/1.4K]&gt; Fold08 &lt;tibble [2 x 3]&gt; &lt;tibble [0 x 1]&gt;
  9 &lt;split [12.8K/1.4K]&gt; Fold09 &lt;tibble [2 x 3]&gt; &lt;tibble [0 x 1]&gt;
 10 &lt;split [12.8K/1.4K]&gt; Fold10 &lt;tibble [2 x 3]&gt; &lt;tibble [0 x 1]&gt;</code></pre>
@@ -1386,7 +1387,7 @@ m1 %&gt;%
 # A tibble: 1 x 5
   .metric .estimator  mean     n std_err
   &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
-1 rmse    standard    87.8    10   0.793</code></pre>
+1 rmse    standard    89.7    10   0.683</code></pre>
 </div>
 <p>In our next model we aimed to produce a more predictive model by using step_interact to model the interaction between longitude and latitude because we thought geographic location of schools would influence children’s test scores. We updated the recipe and used 10-fold CV again.</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -1435,16 +1436,16 @@ m2 %&gt;%
 # A tibble: 1 x 5
   .metric .estimator  mean     n std_err
   &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
-1 rmse    standard    87.8    10   0.796</code></pre>
+1 rmse    standard    89.7    10   0.685</code></pre>
 </div>
-<p>To better understand the predictive accuracy of our model, we can use a package called VIP to look at a plot of variable importance on score. We choose to examine variables we thought would be theoretically important for test scores, such as grade in school, ethnicity, whether children participated in a special education program, or talented and gifted program, or qualified for a free or reduced lunch program (economic disadvantage). We also included the interaction between longitude and latitude since we thought it would improve our model.</p>
+<p>To better understand the predictive accuracy of our model, we can use a package called VIP to look at a plot of variable importance on score. We choose to examine variables we thought would be theoretically important for test scores, such as grade in school, ethnicity, whether children participated in a special education program or talented and gifted program, or qualified for a free or reduced lunch program (economic disadvantage). We also included the interaction between longitude and latitude since we thought it would improve our model.</p>
 <div class="layout-chunk" data-layout="l-body">
 <pre class="r"><code>
 plot1</code></pre>
 <p><img src="Model_1_files/figure-html5/unnamed-chunk-13-1.png" width="624" /></p>
 </div>
-<p>As seen in the plot, latitude and longitude do not seem to be a variable with a lot of importance in our model, and instead grade in school and whether a child participated in a special education program, or talented and gifted program seemed to be the most important variables of the ones examined. The salmon color bars represent negative values, and teal bars represent positive values.</p>
-<p>This first model allowed us to get acquainted with ML and specifically using recipes. We starting to use some feature engineering to make a more predictive model and will continue to do so in subsequent models.</p>
+<p>As seen in the plot, latitude and longitude do not seem to be a variable with a lot of importance in our model, and instead grade in school and whether a child participated in a special education program or talented and gifted program seemed to be the most important variables of the ones examined. The salmon color bars represent negative values, while teal bars represent positive values.</p>
+<p>This first model allowed us to get acquainted with ML and specifically using recipes. We started to use some feature engineering to make a more predictive model and will continue to do so in subsequent models.</p>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
