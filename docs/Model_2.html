@@ -1313,7 +1313,181 @@
 
 
 <div class="d-article">
+<p>For our second preliminary fit we decided to use a <em>K</em> Nearest Neighbor model to try to improve our predictions by exploring tuning some hyper-parameters as well as exploring the size of the grids.</p>
+<p>As we know, KNN has some extra challenges. KNN models store the trainign datato use it for prediction, when a new sample (test data) is given, uses the K training set points that ar eclosest to the new sample. This implies a lot of inefficient computation. Which is a problem we faced with the kind of data we had. (Spoiler alert) It took forever to run in our whole data set. For while working and testing tuning different things, we had to just use a small portion of the data, and that is what I will do here, to explain our procedure. At the end I will show how are predictions worked/improved for the full data set - but I won’t run it!</p>
+<p>One important step for KNN is that we need to ensure all of our predictors are in the same units, since a key aspect of this mdoel is the distance between predictors. Ie: we will scale our predictors. This will be seen when we build our recipe.</p>
+<p>First, there are a couple other steps we needed to take. Let’s start with our first KNN Model:</p>
+<h2 id="knn-model">KNN Model</h2>
+<p>We first set our model, and specify the engine (KNN) and mode (regression). Secondly, we specified what parameters we wanted to tune. For this first model we decided to tune the parameters: - # Neighbors (K) : this helps us control bias. Small K can become an overfitting problem but a large K could mean we ar eunderfitting (too many irrelevant data points are biegn used) - Weight: Kernel function that weights the distances between samples, ie: how we find the most simmilar nearest neighbors. - Distance: Parameter used when calculating the Minkowski distance (either Manhattan or Euclidean), ie: our measure of distance</p>
+<p>Moreover, we’ll use non-regular/random grids in our model. This means that the range for the possible values of our parameters will be defined , and the multidimensional space will be randomly sampled as many times necessary to cover an enough amount of the space. More especifically, we will use a space-filling design, which basically means that keeps the candidate values of our parameters in such way that they are away from one another but at the same time using well the entire parameter space.</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+knn_reg_mod &lt;- nearest_neighbor() %&gt;%
+  set_engine(&quot;kknn&quot;) %&gt;% 
+  set_mode(&quot;regression&quot;) 
 
+translate(knn_reg_mod)</code></pre>
+<pre><code>
+K-Nearest Neighbor Model Specification (regression)
+
+Computational engine: kknn 
+
+Model fit template:
+kknn::train.kknn(formula = missing_arg(), data = missing_arg(), 
+    ks = 5)</code></pre>
+<pre class="r"><code>
+knn_reg_mod &lt;- knn_reg_mod %&gt;% 
+  set_args(neighbors = tune(),
+                    weight_func = tune(),
+                    dist_power = tune())
+
+knn_params &lt;- parameters(neighbors(range = c(15,70)), weight_func(), dist_power()) #specify parameters
+
+knn_entr &lt;- grid_max_entropy(knn_params, size = 20) #non-regular grid (sfd)
+
+cv &lt;- vfold_cv(train) #resample
+
+parallel::detectCores()</code></pre>
+<pre><code>
+[1] 8</code></pre>
+</div>
+<p>Before fitting our model, we need to specify our recipe, taking itno account that we are facin a regression problem.</p>
+<p>Preprocessing:</p>
+<p>As mentione dbefore, when specifying our data, we need to also work on our predictors a bit to make sure their ar eint eright conditions to be used ina a KNN model. Here for example, we standarized our preditors using median impute and got read of non-relevant predictors (ie: wiht zero vairance). See comments in code.</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+rec3 &lt;- recipe(score ~ ., train) %&gt;% 
+  step_mutate(tst_dt = lubridate::mdy_hms(tst_dt)) %&gt;%
+  update_role(contains(&quot;id&quot;), ncessch, new_role = &quot;id vars&quot;) %&gt;% 
+  step_medianimpute(all_numeric(), -all_outcomes(), -has_role(&quot;id vars&quot;))  %&gt;% 
+  step_novel(all_nominal()) %&gt;% #assigns previously unseen factor elvel to a new value
+  step_unknown(all_nominal()) %&gt;% #assigns missing value to unknown values
+  step_nzv(all_predictors(), freq_cut = 0, unique_cut = 0)  %&gt;% 
+  step_dummy(all_nominal())  %&gt;% #dummy coded all nominl predictors
+  step_nzv(all_predictors()) #remved predictors with zero vairance (non relevant)
+
+rec3</code></pre>
+<pre><code>
+Data Recipe
+
+Inputs:
+
+      role #variables
+   id vars          6
+   outcome          1
+ predictor         40
+
+Operations:
+
+Variable mutation for tst_dt
+Median Imputation for all_numeric, -, all_outcomes(), ...
+Novel factor level assignment for all_nominal
+Unknown factor level assignment for all_nominal
+Sparse, unbalanced variable filter on all_predictors
+Dummy variables from all_nominal
+Sparse, unbalanced variable filter on all_predictors</code></pre>
+</div>
+<p>Ok, now that we specified our model (tuning and grids) and that we created a recipe, we are ready to fit our model!</p>
+<p>We will look at our top 5 parameters that give us the lowest rmse’s</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+foreach::registerDoSEQ()
+tic()
+
+
+knn_reg_res3 &lt;- tune::tune_grid(
+  knn_reg_mod, #our model
+  preprocessor = rec3, #specify recipe
+  grid = knn_entr, #non-regular grid
+  resamples = cv,
+  control = tune::control_resamples(verbose = TRUE,
+                                    save_pred = TRUE))
+
+toc()</code></pre>
+<pre><code>
+561.64 sec elapsed</code></pre>
+<pre class="r"><code>
+knn_reg_res3 %&gt;% 
+  show_best(metric = &quot;rmse&quot;, n = 5) </code></pre>
+<pre><code>
+# A tibble: 5 x 8
+  neighbors weight_func dist_power .metric .estimator  mean     n
+      &lt;int&gt; &lt;chr&gt;            &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;
+1        61 epanechnik~       1.96 rmse    standard    94.4    10
+2        56 optimal           1.70 rmse    standard    94.7    10
+3        36 cos               1.85 rmse    standard    94.8    10
+4        45 triangular        1.39 rmse    standard    95.2    10
+5        23 optimal           1.66 rmse    standard    95.7    10
+# ... with 1 more variable: std_err &lt;dbl&gt;</code></pre>
+</div>
+<p>Now, let’s take a look at a plot comparing different parameter vlaues and their performance by looking at rmse and R-sq as our performance indicators. More especiffically we will look at the performace of different values od distance and K , comapring for different weight functions.</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+knn_reg_res3 %&gt;% 
+  autoplot() +
+  geom_line()</code></pre>
+<p><img src="Model_2_files/figure-html5/plot-1.png" width="624" /></p>
+</div>
+<p>Now, let’s finalize our model (see comments in code for step by step):</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+foreach::registerDoSEQ()
+
+# First, we select best tuning parameters
+ knn_reg_best &lt;- knn_reg_res3 %&gt;%
+  select_best(metric = &quot;rmse&quot;)
+
+# We finalize our model using the best tuning parameters
+knn_reg_mod_final &lt;- knn_reg_mod %&gt;%
+    finalize_model(knn_reg_best) 
+
+ # We finalize our recipe using the best tuning parameters
+ knn_reg_rec_final &lt;- rec3 %&gt;% 
+   finalize_recipe(knn_reg_best)
+ 
+  # Now we run our last fit on our initial data split
+
+
+ knn_reg_test_results &lt;- last_fit(knn_reg_mod_final, 
+   preprocessor = knn_reg_rec_final, 
+   split = splt)
+
+ #Collect metrics
+ knn_reg_test_results %&gt;% 
+   collect_metrics()</code></pre>
+<pre><code>
+# A tibble: 2 x 3
+  .metric .estimator .estimate
+  &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
+1 rmse    standard      86.6  
+2 rsq     standard       0.416</code></pre>
+</div>
+<p>Now, we run it in our test data set, to ge tour predictions:</p>
+<div class="layout-chunk" data-layout="l-body">
+<pre class="r"><code>
+test &lt;- testing(splt)
+
+prepped_train &lt;- knn_reg_rec_final  %&gt;% 
+  prep()  %&gt;% 
+  bake(train)  %&gt;% 
+  select(-contains(&quot;id&quot;), -ncessch)
+
+#real_test &lt;- read_csv(&quot;../input/edld-654-spring-2020/test.csv&quot;,
+                       #col_types = cols(.default = col_guess(), calc_admn_cd = col_character()))  %&gt;% 
+  #left_join(frl)
+
+prepped_test &lt;- knn_reg_rec_final   %&gt;% 
+  prep()  %&gt;% 
+  bake(test)%&gt;%
+  select(-contains(&quot;id&quot;), -ncessch)
+
+
+full_train_fit &lt;- fit( knn_reg_mod_final, score ~ ., prepped_train)
+
+preds &lt;- predict(full_train_fit, new_data = prepped_test)
+ pred_file &lt;- tibble(Id = test$id, Predicted = preds$.pred) 
+ #write_csv(pred_file, &quot;submission.csv&quot;)</code></pre>
+</div>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>

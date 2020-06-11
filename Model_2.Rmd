@@ -64,6 +64,7 @@ head(data)
 set.seed(200)
 splt <- initial_split(data)
 train <- training(splt)
+
 ```
 
 For our second preliminary fit we decided to use a *K* Nearest Neighbor model to try to improve our predictions by exploring tuning some hyper-parameters as well as exploring the size of the grids. 
@@ -198,27 +199,28 @@ knn_reg_mod_final <- knn_reg_mod %>%
 Now, we run it in our test data set, to ge tour predictions: 
 
 ```{r}
+test <- testing(splt)
 
 prepped_train <- knn_reg_rec_final  %>% 
   prep()  %>% 
   bake(train)  %>% 
   select(-contains("id"), -ncessch)
 
-real_test <- read_csv("../input/edld-654-spring-2020/test.csv",
-                       col_types = cols(.default = col_guess(), calc_admn_cd = col_character()))  %>% 
-  left_join(frl)
+#real_test <- read_csv("../input/edld-654-spring-2020/test.csv",
+                       #col_types = cols(.default = col_guess(), calc_admn_cd = col_character()))  %>% 
+  #left_join(frl)
 
 prepped_test <- knn_reg_rec_final   %>% 
   prep()  %>% 
-  bake(real_test)%>%
+  bake(test)%>%
   select(-contains("id"), -ncessch)
 
 
 full_train_fit <- fit( knn_reg_mod_final, score ~ ., prepped_train)
 
 preds <- predict(full_train_fit, new_data = prepped_test)
- pred_file <- tibble(Id = real_test$id, Predicted = preds$.pred) 
- write_csv(pred_file, "submission.csv")
+ pred_file <- tibble(Id = test$id, Predicted = preds$.pred) 
+ #write_csv(pred_file, "submission.csv")
 
 ```
 
