@@ -1322,7 +1322,7 @@ full_train &lt;- read.csv(here(&quot;data&quot;,&quot;train.csv&quot;)) %&gt;%
                  sample_frac(.10)</code></pre>
 </div>
 <h1 id="split-data-and-use-cv">Split data and use CV</h1>
-<h2 id="for-more-information-about-this-see-the-about-page">For more information about this see the about page</h2>
+<h3 id="for-more-information-about-this-see-the-about-page">For more information about this see the about page</h3>
 <p>One of the biggest hurdles for learning and using machine learning (ML) is getting the right balance of bias-variance. The purpose of ML is to be able to predict unseen scores or data, so we use available data to model the best prediction. The bias reflects how well the model fits the structure of our data; low bias is good, where high bias ignores important details of our data. Variance reflects variability of our model predictions for a specific data point; flexible models are more likely to have higher variance and are prone to overfitting to the training data and not generalize well to new data. Ideally, our model would have low bias and low variance, but for our first model we will run a linear model which typically has a high bias and low variance.</p>
 <p>We used k-fold cross validation (CV) to split our training data into 10 distinct samples of data. Although k-fold may have more variability than other CV methods, it is the most widely used method. For each fold, 10% of the training data are sampled for assessment, and the remaining of the training data serve as our analysis set for that fold. Our performance measure (RMSE) will be the average RMSE across all 10 folds.</p>
 <div class="layout-chunk" data-layout="l-body">
@@ -1376,29 +1376,6 @@ Sparse, unbalanced variable filter on all_predictors</code></pre>
 <p>We specify that we want to a run a regression.</p>
 <div class="layout-chunk" data-layout="l-body">
 <pre class="r"><code>
-prep(rec)</code></pre>
-<pre><code>
-Data Recipe
-
-Inputs:
-
-      role #variables
-   id vars          6
-   outcome          1
- predictor         40
-
-Training data contained 14208 data points and 14208 incomplete rows. 
-
-Operations:
-
-Variable mutation for tst_dt [trained]
-Median Imputation for enrl_grd, lat, ... [trained]
-Unknown factor level assignment for gndr, ethnic_cd, ... [trained]
-Novel factor level assignment for gndr, ethnic_cd, ... [trained]
-Sparse, unbalanced variable filter removed calc_admn_cd, ... [trained]
-Dummy variables from gndr, ethnic_cd, tst_bnch, ... [trained]
-Sparse, unbalanced variable filter removed gndr_unknown, ... [trained]</code></pre>
-<pre class="r"><code>
 mod &lt;- linear_reg() %&gt;%
   set_engine(&quot;lm&quot;) %&gt;% 
   set_mode(&quot;regression&quot;)
@@ -1418,11 +1395,7 @@ m1</code></pre>
 #  10-fold cross-validation 
 # A tibble: 10 x 4
    splits               id     .metrics         .notes          
-<<<<<<< Updated upstream
-   &lt;list&gt;               &lt;chr&gt;  &lt;list&gt;           &lt;list&gt;          
-=======
  * &lt;list&gt;               &lt;chr&gt;  &lt;list&gt;           &lt;list&gt;          
->>>>>>> Stashed changes
  1 &lt;split [12.8K/1.4K]&gt; Fold01 &lt;tibble [2 x 3]&gt; &lt;tibble [1 x 1]&gt;
  2 &lt;split [12.8K/1.4K]&gt; Fold02 &lt;tibble [2 x 3]&gt; &lt;tibble [1 x 1]&gt;
  3 &lt;split [12.8K/1.4K]&gt; Fold03 &lt;tibble [2 x 3]&gt; &lt;tibble [1 x 1]&gt;
@@ -1435,7 +1408,7 @@ m1</code></pre>
 10 &lt;split [12.8K/1.4K]&gt; Fold10 &lt;tibble [2 x 3]&gt; &lt;tibble [1 x 1]&gt;</code></pre>
 </div>
 <h3 id="our-initial-model-without-feature-engineering-produced-a-mean-rmse-of-87.8.">Our initial model without feature engineering produced a mean rmse of 87.8.</h3>
-<p>These results will differ a litter bit every time the model is rerun. The RMSE for the full dataset was 87.8</p>
+<p>These results will differ a litte bit every time the model is rerun (because we only sampled 10% of the data). The RMSE for the full dataset was 87.8</p>
 <div class="layout-chunk" data-layout="l-body">
 <pre class="r"><code>
 m1 %&gt;%  
@@ -1445,11 +1418,7 @@ m1 %&gt;%
 # A tibble: 1 x 5
   .metric .estimator  mean     n std_err
   &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
-<<<<<<< Updated upstream
-1 rmse    standard    87.8    10   0.793</code></pre>
-=======
-1 rmse    standard    90.4    10   0.694</code></pre>
->>>>>>> Stashed changes
+1 rmse    standard    89.6    10   0.466</code></pre>
 </div>
 <h1 id="refine-model">Refine model</h1>
 <p>In our next model we aimed to produce a more predictive model by using step_interact to model the interaction between longitude and latitude because we thought geographic location of schools would influence children’s test scores. We updated the recipe and used 10-fold CV again.</p>
@@ -1499,11 +1468,7 @@ m2 %&gt;%
 # A tibble: 1 x 5
   .metric .estimator  mean     n std_err
   &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
-<<<<<<< Updated upstream
-1 rmse    standard    87.8    10   0.796</code></pre>
-=======
-1 rmse    standard    90.4    10   0.702</code></pre>
->>>>>>> Stashed changes
+1 rmse    standard    89.7    10   0.465</code></pre>
 </div>
 <h1 id="plot-most-important-variables">Plot most important variables</h1>
 <p>To better understand the predictive accuracy of our model, we can use a package called VIP to look at a plot of variable importance on score. We choose to examine variables we thought would be theoretically important for test scores, such as grade in school, ethnicity, whether children participated in a special education program or talented and gifted program, or qualified for a free or reduced lunch program (economic disadvantage). We also included the interaction between longitude and latitude since we thought it would improve our model.</p>
@@ -1513,10 +1478,9 @@ plot1</code></pre>
 <p><img src="Model_1_files/figure-html5/plot-1.png" width="624" /></p>
 </div>
 <p>As seen in the plot, latitude and longitude do not seem to be a variable with a lot of importance in our model, and instead grade in school and whether a child participated in a special education program or talented and gifted program seemed to be the most important variables of the ones examined. The salmon color bars represent negative values, while teal bars represent positive values.</p>
-<p>#Predict the test set</p>
-<h2 id="the-last-step-is-to-you-use-the-recipe-and-model-to-predict-the-entire-training-set.">The last step is to you use the recipe and model to predict the entire training set.</h2>
-<p>We prepare this by using prep() and bake(), and lastly save the predicted score and subject ID to be able to upload out predictions to our class site on Kaggle.</p>
-We recieved an rmse of 90.42 for predicting the final test dataset.
+<h1 id="predict-the-test-set">Predict the test set</h1>
+<h3 id="the-last-step-is-to-you-use-the-recipe-and-model-to-predict-the-entire-training-set.">The last step is to you use the recipe and model to predict the entire training set.</h3>
+<p>We prepare for this process this by using prep() and bake(). Then we save the predicted score and subject ID to be able to upload out predictions to our class site on Kaggle. We recieved an rmse of 90.42 for predicting the final test dataset.</p>
 <div class="layout-chunk" data-layout="l-body">
 <pre class="r"><code>
 prepped_train &lt;- rec2 %&gt;% 
@@ -1542,7 +1506,7 @@ preds_test &lt;- prepped_test %&gt;%
 
 write_csv(preds_test, &quot;submission.csv&quot;)</code></pre>
 </div>
-<p>This first model allowed us to get acquainted with ML and specifically using recipes. We started to use some feature engineering to make a more predictive model and will continue to do so in subsequent models.</p>
+<h2 id="this-first-model-allowed-us-to-get-acquainted-with-ml-and-specifically-using-recipes.-we-started-to-use-some-feature-engineering-to-make-a-more-predictive-model-and-will-continue-to-do-so-in-subsequent-models.">This first model allowed us to get acquainted with ML and specifically using recipes. We started to use some feature engineering to make a more predictive model and will continue to do so in subsequent models.</h2>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
