@@ -1308,7 +1308,7 @@
 
 <div class="d-title">
 <h1>About Model 1</h1>
-<p>Learn more about our first model</p>
+<p><p>Learn more about our first model</p></p>
 </div>
 
 
@@ -1395,7 +1395,7 @@ m1</code></pre>
 #  10-fold cross-validation 
 # A tibble: 10 x 4
    splits               id     .metrics         .notes          
- * &lt;list&gt;               &lt;chr&gt;  &lt;list&gt;           &lt;list&gt;          
+   &lt;list&gt;               &lt;chr&gt;  &lt;list&gt;           &lt;list&gt;          
  1 &lt;split [12.8K/1.4K]&gt; Fold01 &lt;tibble [2 x 3]&gt; &lt;tibble [1 x 1]&gt;
  2 &lt;split [12.8K/1.4K]&gt; Fold02 &lt;tibble [2 x 3]&gt; &lt;tibble [1 x 1]&gt;
  3 &lt;split [12.8K/1.4K]&gt; Fold03 &lt;tibble [2 x 3]&gt; &lt;tibble [1 x 1]&gt;
@@ -1418,7 +1418,7 @@ m1 %&gt;%
 # A tibble: 1 x 5
   .metric .estimator  mean     n std_err
   &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
-1 rmse    standard    89.6    10   0.466</code></pre>
+1 rmse    standard    87.9    10   0.381</code></pre>
 </div>
 <h1 id="refine-model">Refine model</h1>
 <p>In our next model we aimed to produce a more predictive model by using step_interact to model the interaction between longitude and latitude because we thought geographic location of schools would influence children’s test scores. We updated the recipe and used 10-fold CV again.</p>
@@ -1468,7 +1468,7 @@ m2 %&gt;%
 # A tibble: 1 x 5
   .metric .estimator  mean     n std_err
   &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;   &lt;dbl&gt;
-1 rmse    standard    89.7    10   0.465</code></pre>
+1 rmse    standard    87.8    10   0.391</code></pre>
 </div>
 <h1 id="plot-most-important-variables">Plot most important variables</h1>
 <p>To better understand the predictive accuracy of our model, we can use a package called VIP to look at a plot of variable importance on score. We choose to examine variables we thought would be theoretically important for test scores, such as grade in school, ethnicity, whether children participated in a special education program or talented and gifted program, or qualified for a free or reduced lunch program (economic disadvantage). We also included the interaction between longitude and latitude since we thought it would improve our model.</p>

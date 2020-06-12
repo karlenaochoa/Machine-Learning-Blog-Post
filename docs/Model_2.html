@@ -21,27 +21,27 @@
   <!--radix_placeholder_meta_tags-->
   <title>Machine Learning Blog: About Model 2</title>
   
-  <meta property="description" itemprop="description" content="Some additional details about the blog"/>
+  <meta property="description" itemprop="description" content="Learn more about our second model"/>
   
   
   
   <!--  https://developers.facebook.com/docs/sharing/webmasters#markup -->
   <meta property="og:title" content="Machine Learning Blog: About Model 2"/>
   <meta property="og:type" content="article"/>
-  <meta property="og:description" content="Some additional details about the blog"/>
+  <meta property="og:description" content="Learn more about our second model"/>
   <meta property="og:locale" content="en_US"/>
   <meta property="og:site_name" content="Machine Learning Blog"/>
   
   <!--  https://dev.twitter.com/cards/types/summary -->
   <meta property="twitter:card" content="summary"/>
   <meta property="twitter:title" content="Machine Learning Blog: About Model 2"/>
-  <meta property="twitter:description" content="Some additional details about the blog"/>
+  <meta property="twitter:description" content="Learn more about our second model"/>
   
   <!--/radix_placeholder_meta_tags-->
   <!--radix_placeholder_rmarkdown_metadata-->
   
   <script type="text/json" id="radix-rmarkdown-metadata">
-  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description"]}},"value":[{"type":"character","attributes":{},"value":["About Model 2"]},{"type":"character","attributes":{},"value":["Some additional details about the blog"]}]}
+  {"type":"list","attributes":{"names":{"type":"character","attributes":{},"value":["title","description"]}},"value":[{"type":"character","attributes":{},"value":["About Model 2"]},{"type":"character","attributes":{},"value":["Learn more about our second model"]}]}
   </script>
   <!--/radix_placeholder_rmarkdown_metadata-->
   <!--radix_placeholder_navigation_in_header-->
@@ -1282,7 +1282,7 @@
 <!--radix_placeholder_front_matter-->
 
 <script id="distill-front-matter" type="text/json">
-{"title":"About Model 2","description":"Some additional details about the blog","authors":[]}
+{"title":"About Model 2","description":"Learn more about our second model","authors":[]}
 </script>
 
 <!--/radix_placeholder_front_matter-->
@@ -1308,18 +1308,18 @@
 
 <div class="d-title">
 <h1>About Model 2</h1>
-<p><p>Some additional details about the blog</p></p>
+<p><p>Learn more about our second model</p></p>
 </div>
 
 
 <div class="d-article">
 <p>For our second preliminary fit we decided to use a <em>K</em> Nearest Neighbor model to try to improve our predictions by exploring tuning some hyper-parameters as well as exploring the size of the grids.</p>
-<p>As we know, KNN has some extra challenges. KNN models store the trainign datato use it for prediction, when a new sample (test data) is given, uses the K training set points that ar eclosest to the new sample. This implies a lot of inefficient computation. Which is a problem we faced with the kind of data we had. (Spoiler alert) It took forever to run in our whole data set. For while working and testing tuning different things, we had to just use a small portion of the data, and that is what I will do here, to explain our procedure. At the end I will show how are predictions worked/improved for the full data set - but I won’t run it!</p>
-<p>One important step for KNN is that we need to ensure all of our predictors are in the same units, since a key aspect of this mdoel is the distance between predictors. Ie: we will scale our predictors. This will be seen when we build our recipe.</p>
+<p>As we know, KNN has some extra challenges. KNN models store the training data to use it for prediction, when a new sample (test data) is given, uses the K training set points that are closest to the new sample. This implies a lot of inefficient computation. Which is a problem we faced with the kind of data we had. (Spoiler alert) It took forever to run in our whole data set. For while working and testing tuning different things, we had to just use a small portion of the data, and that is what I will do here, to explain our procedure. At the end I will show how are predictions worked/improved for the full data set - but I won’t run it!</p>
+<p>One important step for KNN is that we need to ensure all of our predictors are in the same units, since a key aspect of this model is the distance between predictors. IE: we will scale our predictors. This will be seen when we build our recipe.</p>
 <p>First, there are a couple other steps we needed to take. Let’s start with our first KNN Model:</p>
 <h2 id="knn-model">KNN Model</h2>
-<p>We first set our model, and specify the engine (KNN) and mode (regression). Secondly, we specified what parameters we wanted to tune. For this first model we decided to tune the parameters: - # Neighbors (K) : this helps us control bias. Small K can become an overfitting problem but a large K could mean we ar eunderfitting (too many irrelevant data points are biegn used) - Weight: Kernel function that weights the distances between samples, ie: how we find the most simmilar nearest neighbors. - Distance: Parameter used when calculating the Minkowski distance (either Manhattan or Euclidean), ie: our measure of distance</p>
-<p>Moreover, we’ll use non-regular/random grids in our model. This means that the range for the possible values of our parameters will be defined , and the multidimensional space will be randomly sampled as many times necessary to cover an enough amount of the space. More especifically, we will use a space-filling design, which basically means that keeps the candidate values of our parameters in such way that they are away from one another but at the same time using well the entire parameter space.</p>
+<p>We first set our model, and specify the engine (KNN) and mode (regression). Secondly, we specified what parameters we wanted to tune. For this first model we decided to tune the parameters: - # Neighbors (K) : this helps us control bias. Small K can become an over-fitting problem but a large K could mean we are under-fitting (too many irrelevant data points are being used) - Weight: Kernel function that weights the distances between samples, ie: how we find the most similar nearest neighbors. - Distance: Parameter used when calculating the Minkowski distance (either Manhattan or Euclidean), ie: our measure of distance</p>
+<p>Moreover, we’ll use non-regular/random grids in our model. This means that the range for the possible values of our parameters will be defined , and the multidimensional space will be randomly sampled as many times necessary to cover an enough amount of the space. More specifically, we will use a space-filling design, which basically means that keeps the candidate values of our parameters in such way that they are away from one another but at the same time using well the entire parameter space.</p>
 <div class="layout-chunk" data-layout="l-body">
 <pre class="r"><code>
 knn_reg_mod &lt;- nearest_neighbor() %&gt;%
@@ -1351,9 +1351,9 @@ parallel::detectCores()</code></pre>
 <pre><code>
 [1] 8</code></pre>
 </div>
-<p>Before fitting our model, we need to specify our recipe, taking itno account that we are facin a regression problem.</p>
+<p>Before fitting our model, we need to specify our recipe, taking into account that we are facing a regression problem.</p>
 <p>Preprocessing:</p>
-<p>As mentione dbefore, when specifying our data, we need to also work on our predictors a bit to make sure their ar eint eright conditions to be used ina a KNN model. Here for example, we standarized our preditors using median impute and got read of non-relevant predictors (ie: wiht zero vairance). See comments in code.</p>
+<p>As mentioned before, when specifying our data, we need to also work on our predictors a bit to make sure they are in the right conditions to be used in a KNN model. Here for example, we standarized our preditors using median impute and got rid of non-relevant predictors (ie: wiht zero variance). See comments in code.</p>
 <div class="layout-chunk" data-layout="l-body">
 <pre class="r"><code>
 rec3 &lt;- recipe(score ~ ., train) %&gt;% 
@@ -1405,7 +1405,7 @@ knn_reg_res3 &lt;- tune::tune_grid(
 
 toc()</code></pre>
 <pre><code>
-561.64 sec elapsed</code></pre>
+531.8 sec elapsed</code></pre>
 <pre class="r"><code>
 knn_reg_res3 %&gt;% 
   show_best(metric = &quot;rmse&quot;, n = 5) </code></pre>
@@ -1413,14 +1413,14 @@ knn_reg_res3 %&gt;%
 # A tibble: 5 x 8
   neighbors weight_func dist_power .metric .estimator  mean     n
       &lt;int&gt; &lt;chr&gt;            &lt;dbl&gt; &lt;chr&gt;   &lt;chr&gt;      &lt;dbl&gt; &lt;int&gt;
-1        61 epanechnik~       1.96 rmse    standard    94.4    10
-2        56 optimal           1.70 rmse    standard    94.7    10
-3        36 cos               1.85 rmse    standard    94.8    10
-4        45 triangular        1.39 rmse    standard    95.2    10
-5        23 optimal           1.66 rmse    standard    95.7    10
+1        36 cos              1.85  rmse    standard    87.6    10
+2        45 triangular       1.39  rmse    standard    87.7    10
+3        61 epanechnik~      1.96  rmse    standard    87.8    10
+4        56 optimal          1.70  rmse    standard    87.8    10
+5        38 optimal          0.961 rmse    standard    88.5    10
 # ... with 1 more variable: std_err &lt;dbl&gt;</code></pre>
 </div>
-<p>Now, let’s take a look at a plot comparing different parameter vlaues and their performance by looking at rmse and R-sq as our performance indicators. More especiffically we will look at the performace of different values od distance and K , comapring for different weight functions.</p>
+<p>Now, let’s take a look at a plot comparing different parameter values and their performance by looking at rmse and R-sq as our performance indicators. More specifically we will look at the performance of different values of distance and K , comparing for different weight functions. (remember, we are only using a small portion of the data for this, for practical reasons.)</p>
 <div class="layout-chunk" data-layout="l-body">
 <pre class="r"><code>
 knn_reg_res3 %&gt;% 
@@ -1459,10 +1459,10 @@ knn_reg_mod_final &lt;- knn_reg_mod %&gt;%
 # A tibble: 2 x 3
   .metric .estimator .estimate
   &lt;chr&gt;   &lt;chr&gt;          &lt;dbl&gt;
-1 rmse    standard      86.6  
-2 rsq     standard       0.416</code></pre>
+1 rmse    standard      93.2  
+2 rsq     standard       0.366</code></pre>
 </div>
-<p>Now, we run it in our test data set, to ge tour predictions:</p>
+<p>Now, we run it in our test data set, to get our predictions:</p>
 <div class="layout-chunk" data-layout="l-body">
 <pre class="r"><code>
 test &lt;- testing(splt)
@@ -1485,9 +1485,10 @@ prepped_test &lt;- knn_reg_rec_final   %&gt;%
 full_train_fit &lt;- fit( knn_reg_mod_final, score ~ ., prepped_train)
 
 preds &lt;- predict(full_train_fit, new_data = prepped_test)
- pred_file &lt;- tibble(Id = test$id, Predicted = preds$.pred) 
- #write_csv(pred_file, &quot;submission.csv&quot;)</code></pre>
+ pred_file &lt;- tibble(Id = test$id, Predicted = preds$.pred) </code></pre>
 </div>
+<p>The results shown here are just for practical reasons - we are only using a small portion of the data, otherwise running and knitting the document would take too long (several, several hours). However, when we ran the model in the entire data for the kaggle competition, we obtained an rmse value of 89.32.</p>
+<p>Although we did see an improvement in the performance of our predictions, we also learnt that KNN is not ideal given the fact that it is very computationally inefficient, especially when dealing with a data set like ours.</p>
 <!--radix_placeholder_article_footer-->
 <!--/radix_placeholder_article_footer-->
 </div>
